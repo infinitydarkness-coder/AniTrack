@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniTrack — Anime List Manager</title>
+  <meta name="description"
+    content="Track your anime watchlist with AniTrack. Search, rate, and manage your anime collection.">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #0f0f1a;
+      --bg3: #13131f;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-hover: rgba(124, 58, 237, 0.12);
+      --border: rgba(124, 58, 237, 0.2);
+      --border-hover: rgba(168, 85, 247, 0.5);
+      --accent: #7c3aed;
+      --accent2: #a855f7;
+      --accent3: #c084fc;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --glow: 0 0 20px rgba(124, 58, 237, 0.4);
+      --glow2: 0 0 40px rgba(124, 58, 237, 0.3);
+      --radius: 14px;
+      --trans: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent2);
+    }
+
+    /* BG animated gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse at 20% 20%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    .logo span {
+      color: var(--text2);
+      -webkit-text-fill-color: var(--text2);
+      font-size: 0.9rem;
+      font-weight: 400;
+      display: block;
+      letter-spacing: 1px;
+    }
+
+    /* SEARCH */
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 48px 12px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--trans);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent2);
+      box-shadow: var(--glow);
+      background: rgba(124, 58, 237, 0.08);
+    }
+
+    .search-input::placeholder {
+      color: var(--text3);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      pointer-events: none;
+      font-size: 1.1rem;
+    }
+
+    .search-loading {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent2);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to {
+        transform: translateY(-50%) rotate(360deg);
+      }
+    }
+
+    /* DROPDOWN */
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: rgba(15, 15, 26, 0.97);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      z-index: 200;
+      display: none;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), var(--glow2);
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .dropdown.show {
+      display: block;
+      animation: fadeDown 0.2s ease;
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: var(--trans);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item.active {
+      background: rgba(124, 58, 237, 0.18);
+    }
+
+    .dropdown-item img {
+      width: 40px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .dropdown-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dropdown-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-jp {
+      font-size: 0.75rem;
+      color: var(--text2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .dropdown-badge {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent3);
+    }
+
+    .dropdown-no-result {
+      padding: 20px;
+      text-align: center;
+      color: var(--text3);
+    }
+
+    /* EXPORT / IMPORT BTNS */
+    .export-btn {
+      padding: 10px 18px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--accent3);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--trans);
+      white-space: nowrap;
+    }
+
+    .export-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .import-btn {
+      padding: 10px 18px;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 50px;
+      color: #c084fc;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--trans);
+      white-space: nowrap;
+    }
+
+    .import-btn:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: var(--accent2);
+      box-shadow: var(--glow);
+    }
+
+    /* IMPORT PROGRESS MODAL */
+    .progress-modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 0 60px rgba(124, 58, 237, 0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.show .progress-modal {
+      transform: scale(1);
+    }
+
+    .progress-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-icon {
+      font-size: 1.6rem;
+    }
+
+    .progress-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .progress-subtitle {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .progress-body {
+      padding: 20px 24px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 50px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.3s ease;
+      width: 0%;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+    }
+
+    .progress-count {
+      font-size: 0.8rem;
+      color: var(--text2);
+      margin-bottom: 16px;
+      text-align: right;
+    }
+
+    .progress-log {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      line-height: 1.8;
+      font-family: monospace;
+    }
+
+    .log-ok {
+      color: #4ade80;
+    }
+
+    .log-skip {
+      color: #facc15;
+    }
+
+    .log-err {
+      color: #f87171;
+    }
+
+    .log-info {
+      color: var(--text2);
+    }
+
+    .progress-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .progress-done-msg {
+      font-size: 0.85rem;
+      color: var(--accent3);
+      font-weight: 700;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* STATS */
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 110px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      text-align: center;
+      transition: var(--trans);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-hover);
+      box-shadow: var(--glow);
+    }
+
+    .stat-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text3);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* FILTER BAR */
+    .filter-section {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .filter-btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--trans);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text2);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: var(--glow);
+    }
+
+    .filter-right {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: var(--trans);
+      width: 160px;
+    }
+
+    .list-search:focus {
+      border-color: var(--accent2);
+      box-shadow: var(--glow);
+    }
+
+    .list-search::placeholder {
+      color: var(--text3);
+    }
+
+    .sort-select {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+      transition: var(--trans);
+    }
+
+    .sort-select:focus {
+      border-color: var(--accent2);
+    }
+
+    .sort-select option {
+      background: var(--bg2);
+    }
+
+    /* GRID */
+    .anime-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .anime-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--trans);
+      position: relative;
+      animation: cardIn 0.4s ease both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .anime-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--border-hover);
+      box-shadow: 0 8px 40px rgba(124, 58, 237, 0.35), var(--glow);
+      background: var(--card-hover);
+    }
+
+    .card-poster {
+      position: relative;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+    }
+
+    .card-poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .anime-card:hover .card-poster img {
+      transform: scale(1.06);
+    }
+
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10, 10, 15, 0.97) 0%, rgba(10, 10, 15, 0.4) 60%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+    }
+
+    .anime-card:hover .card-overlay {
+      opacity: 1;
+    }
+
+    .overlay-synopsis {
+      font-size: 0.7rem;
+      color: var(--text2);
+      display: -webkit-box;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+
+    .card-del {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(220, 38, 38, 0.8);
+      border: none;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: var(--trans);
+      z-index: 2;
+    }
+
+    .anime-card:hover .card-del {
+      opacity: 1;
+    }
+
+    .card-del:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    .card-body {
+      padding: 10px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 0.82rem;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .status-Watching {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .status-Completed {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-On-Hold {
+      background: rgba(234, 179, 8, 0.2);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    .status-Dropped {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .status-Plan-to-Watch {
+      background: rgba(100, 116, 139, 0.2);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--text3);
+    }
+
+    .card-stars {
+      color: #facc15;
+      font-size: 0.75rem;
+      letter-spacing: -1px;
+    }
+
+    .card-score {
+      color: var(--accent3);
+      font-weight: 700;
+    }
+
+    /* EMPTY */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text3);
+    }
+
+    .empty-state .icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+    }
+
+    .empty-state small {
+      font-size: 0.85rem;
+      margin-top: 8px;
+      display: block;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 0 60px rgba(124, 58, 237, 0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.show .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-poster {
+      width: 80px;
+      height: 112px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .modal-info {
+      flex: 1;
+    }
+
+    .modal-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .modal-jp {
+      font-size: 0.8rem;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+
+    .modal-score {
+      font-size: 0.85rem;
+      color: var(--accent2);
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-synopsis {
+      font-size: 0.82rem;
+      color: var(--text2);
+      line-height: 1.6;
+      max-height: 100px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      padding-right: 4px;
+    }
+
+    .modal-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .status-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .status-opt {
+      padding: 7px 12px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2);
+      transition: var(--trans);
+    }
+
+    .status-opt:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .status-opt.sel {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: var(--text3);
+      transition: color 0.15s;
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover~label,
+    .star-rating input:checked~label {
+      color: #facc15;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--trans);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--glow);
+    }
+
+    .btn-secondary {
+      padding: 12px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--text2);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--trans);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    @media(max-width:768px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-wrap {
+        max-width: 100%;
+      }
+
+      .anime-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+
+      .filter-right {
+        margin-left: 0;
+      }
+    }
+
+    /* AUTH UI */
+    .user-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(168, 85, 247, 0.5);
+      flex-shrink: 0;
+    }
+
+    .user-email {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .logout-btn {
+      padding: 5px 11px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 50px;
+      color: #f87171;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .login-btn {
+      padding: 9px 16px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .login-btn:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .cloud-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.67rem;
+      padding: 2px 7px;
+      border-radius: 50px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.22);
+      font-weight: 700;
+    }
+
+    .auth-modal-box {
+      max-width: 420px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #64748b;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .auth-tab.active {
+      color: #a855f7;
+      border-bottom-color: #a855f7;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .auth-form.hidden {
+      display: none;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 11px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.87rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .auth-input:focus {
+      border-color: #a855f7;
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .auth-input::placeholder {
+      color: #64748b;
+    }
+
+    .auth-err {
+      font-size: 0.76rem;
+      color: #f87171;
+      min-height: 16px;
+    }
+
+    .auth-ok {
+      font-size: 0.76rem;
+      color: #4ade80;
+      min-height: 16px;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.73rem;
+      color: #64748b;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(124, 58, 237, 0.2);
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .google-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+
+    .config-warn {
+      background: rgba(234, 179, 8, 0.08);
+      border: 1px solid rgba(234, 179, 8, 0.22);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.76rem;
+      color: #fcd34d;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .config-warn code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+
+
+/* ── MAIN TABS ─────────────────────────────────────────────────── */
+.main-tabs{display:flex;gap:0;margin:0 auto;max-width:1400px;padding:0 20px;margin-top:12px;}
+.main-tab{flex:1;text-align:center;padding:12px 0;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:#64748b;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.3s ease;letter-spacing:1px;text-transform:uppercase;}
+.main-tab:hover{color:#a855f7;}
+.main-tab.active{color:#a855f7;border-bottom-color:#a855f7;}
+
+/* ── FOR YOU SECTION ───────────────────────────────────────────── */
+#forYouSection{display:none;max-width:1400px;margin:0 auto;padding:0 20px 40px;}
+#forYouSection.visible{display:block;}
+.fy-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;padding-top:8px;}
+.fy-count{font-size:0.85rem;color:#94a3b8;font-weight:600;}
+.fy-count span{color:#a855f7;font-weight:800;}
+.fy-refresh{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;padding:8px 18px;border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;gap:6px;}
+.fy-refresh:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(124,58,237,0.4);}
+.fy-refresh:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.fy-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.fy-filter-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.fy-filter-group-label{font-size:0.7rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-right:4px;}
+.fy-fbtn{padding:5px 12px;border-radius:50px;border:1px solid rgba(124,58,237,0.25);background:rgba(124,58,237,0.08);color:#94a3b8;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s ease;}
+.fy-fbtn:hover{border-color:rgba(168,85,247,0.5);color:#c084fc;}
+.fy-fbtn.active{background:rgba(124,58,237,0.25);border-color:#a855f7;color:#e2e8f0;}
+.fy-sort-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.fy-sort-row label{font-size:0.76rem;color:#64748b;font-weight:700;}
+.fy-sort-select{background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.25);border-radius:8px;color:#e2e8f0;font-family:'Nunito',sans-serif;font-size:0.8rem;padding:6px 10px;cursor:pointer;}
+
+/* ── PROGRESS ──────────────────────────────────────────────────── */
+.fy-progress{display:none;margin-bottom:20px;padding:16px;background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);border-radius:14px;}
+.fy-progress.visible{display:block;}
+.fy-prog-text{font-size:0.8rem;color:#94a3b8;margin-bottom:8px;font-weight:600;}
+.fy-prog-bar-wrap{height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;}
+.fy-prog-bar{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:6px;width:0%;transition:width 0.3s ease;}
+
+/* ── REC CARDS ─────────────────────────────────────────────────── */
+.fy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;}
+.fy-card{background:rgba(255,255,255,0.03);border:1px solid rgba(124,58,237,0.15);border-radius:14px;overflow:hidden;transition:all 0.3s ease;position:relative;}
+.fy-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(124,58,237,0.2);border-color:rgba(168,85,247,0.4);}
+.fy-card-poster{position:relative;aspect-ratio:2/3;overflow:hidden;}
+.fy-card-poster img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
+.fy-card:hover .fy-card-poster img{transform:scale(1.05);}
+.fy-card-freq{position:absolute;top:8px;left:8px;background:rgba(124,58,237,0.85);color:#fff;font-size:0.65rem;font-weight:800;padding:3px 8px;border-radius:50px;backdrop-filter:blur(4px);}
+.fy-card-dismiss{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:#94a3b8;border:none;width:24px;height:24px;border-radius:50%;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s ease;}
+.fy-card:hover .fy-card-dismiss{opacity:1;}
+.fy-card-dismiss:hover{background:rgba(239,68,68,0.6);color:#fff;}
+.fy-card-body{padding:10px;}
+.fy-card-title{font-weight:700;font-size:0.82rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px;color:#e2e8f0;}
+.fy-card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.fy-card-meta span{font-size:0.65rem;color:#94a3b8;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;}
+.fy-card-genres{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.fy-card-genres span{font-size:0.6rem;color:#c084fc;background:rgba(124,58,237,0.12);padding:2px 6px;border-radius:50px;border:1px solid rgba(124,58,237,0.2);}
+.fy-card-reason{font-size:0.68rem;color:#64748b;font-style:italic;margin-bottom:8px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.fy-card-add{width:100%;padding:7px;border:1px solid rgba(124,58,237,0.3);background:rgba(124,58,237,0.1);color:#c084fc;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s ease;}
+.fy-card-add:hover{background:rgba(124,58,237,0.25);border-color:#a855f7;color:#e2e8f0;}
+.fy-card-add.added{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.3);color:#4ade80;cursor:default;}
+.fy-empty{text-align:center;padding:60px 20px;color:#64748b;}
+.fy-empty .icon{font-size:3rem;margin-bottom:12px;}
+
+/* LANDING PAGE */
+#appLanding{position:fixed;inset:0;z-index:9999;background:#0a0a0f;display:flex;align-items:center;justify-content:center;padding:20px;transition:opacity 0.6s ease,transform 0.6s ease;}
+#appLanding.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
+.lbg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(124,58,237,0.18) 0%,transparent 55%),radial-gradient(ellipse at 70% 70%,rgba(168,85,247,0.12) 0%,transparent 55%);pointer-events:none;}
+.landing-wrap{max-width:420px;width:100%;text-align:center;position:relative;z-index:1;}
+.landing-icon{font-size:3.6rem;animation:lFloat 3s ease-in-out infinite;display:block;margin-bottom:10px;}
+@keyframes lFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.landing-logo{font-family:'Rajdhani',sans-serif;font-size:2.8rem;font-weight:700;background:linear-gradient(135deg,#a855f7,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:4px;margin-bottom:4px;}
+.landing-tagline{font-size:0.82rem;color:#64748b;letter-spacing:1.5px;margin-bottom:28px;text-transform:uppercase;}
+.landing-card{background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.25);border-radius:22px;padding:28px 24px;box-shadow:0 0 80px rgba(124,58,237,0.18),0 20px 60px rgba(0,0,0,0.5);}
+.landing-skip{margin-top:16px;font-size:0.76rem;color:#64748b;cursor:pointer;transition:color 0.2s;}
+.landing-skip:hover{color:#a855f7;}
+.landing-skip u{text-underline-offset:2px;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <div id="appLanding">
+  <div class="lbg"></div>
+  <div class="landing-wrap">
+    <span class="landing-icon">&#127999;</span>
+    <div class="landing-logo">AniTrack</div>
+    <div class="landing-tagline">Your personal anime universe</div>
+    <div class="landing-card">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="ltabLogin" onclick="lTab('login')">Sign In</div>
+        <div class="auth-tab" id="ltabSignup" onclick="lTab('signup')">Sign Up</div>
+      </div>
+      <div class="auth-form" id="lLoginForm">
+        <input class="auth-input" id="lEmail" type="email" placeholder="Email address" autocomplete="email">
+        <input class="auth-input" id="lPass" type="password" placeholder="Password" autocomplete="current-password">
+        <div class="auth-err" id="lErr"></div>
+        <button class="btn-primary" id="lBtn" onclick="doLandingLogin()">Sign In</button>
+        <div class="auth-divider">or</div>
+        <button class="google-btn" onclick="doGoogleLogin()"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 9 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-1.9 13.6-5.1l-6.3-5.1C29.5 35.6 26.9 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.6 5.1C9.7 39 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l6.3 5.1C40.5 36.2 44 30.5 44 24c0-1.3-.1-2.7-.4-4z"/></svg> Continue with Google</button>
+      </div>
+      <div class="auth-form hidden" id="lSignupForm">
+        <input class="auth-input" id="lSuEmail" type="email" placeholder="Email address" autocomplete="email">
+        <input class="auth-input" id="lSuPass" type="password" placeholder="Password (min 6 chars)" autocomplete="new-password">
+        <div class="auth-err" id="lSuErr"></div>
+        <div class="auth-ok" id="lSuOk"></div>
+        <button class="btn-primary" onclick="doLandingSignup()">Create Account</button>
+        <div class="auth-divider">or</div>
+        <button class="google-btn" onclick="doGoogleLogin()"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 9 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-1.9 13.6-5.1l-6.3-5.1C29.5 35.6 26.9 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.6 5.1C9.7 39 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l6.3 5.1C40.5 36.2 44 30.5 44 24c0-1.3-.1-2.7-.4-4z"/></svg> Continue with Google</button>
+      </div>
+    </div>
+    <div class="landing-skip" onclick="skipToApp()">Continue without account &mdash; <u>use locally only</u></div>
+  </div>
+</div>
+<header>
+    <div class="header-inner">
+      <div class="logo">AniTrack<span>Anime List Manager</span></div>
+      <div class="search-wrap">
+        <input class="search-input" id="searchInput" type="text"
+          placeholder="Search anime to add... (e.g. Attack on Titan)" autocomplete="off">
+        <span class="search-icon">🔍</span>
+        <div class="search-loading" id="searchLoading"></div>
+        <div class="dropdown" id="dropdown"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="import-btn" id="importBtn">⬆ Import MAL XML</button>
+        <button class="export-btn" id="exportBtn">⬇ Export MAL XML</button>
+      </div>
+      <input type="file" id="importFile" accept=".xml" style="display:none">
+      <div id="userSection" class="user-section"></div>
+      <button class="login-btn" id="loginBtn">&#128273; Sign In</button>
+    </div>
+  </header>
+  <div class="main-tabs" id="mainTabs">
+    <div class="main-tab active" data-tab="mylist" onclick="switchMainTab('mylist')">📋 My List</div>
+    <div class="main-tab" data-tab="foryou" onclick="switchMainTab('foryou')">✨ For You</div>
+  </div>
+  <main>
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-card">
+        <div class="stat-num" id="sTot">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sComp">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sWatch">0</div>
+        <div class="stat-label">Watching</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sHold">0</div>
+        <div class="stat-label">On Hold</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sDrop">0</div>
+        <div class="stat-label">Dropped</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sPlan">0</div>
+        <div class="stat-label">Plan to Watch</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sEps">0</div>
+        <div class="stat-label">Eps Watched</div>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-btns" id="filterBtns">
+        <button class="filter-btn active" data-filter="All">All</button>
+        <button class="filter-btn" data-filter="Watching">Watching</button>
+        <button class="filter-btn" data-filter="Completed">Completed</button>
+        <button class="filter-btn" data-filter="On Hold">On Hold</button>
+        <button class="filter-btn" data-filter="Dropped">Dropped</button>
+        <button class="filter-btn" data-filter="Plan to Watch">Plan to Watch</button>
+      </div>
+      <div class="filter-right">
+        <input class="list-search" id="listSearch" type="text" placeholder="Search your list...">
+        <select class="sort-select" id="sortSelect">
+          <option value="date">Date Added</option>
+          <option value="title">Title A-Z</option>
+          <option value="rating">My Rating</option>
+          <option value="score">MAL Score</option>
+        </select>
+      </div>
+    </div>
+    <div class="anime-grid" id="animeGrid"></div>
+    <!-- FOR YOU SECTION -->
+    <div id="forYouSection">
+      <div class="fy-progress" id="fyProgress">
+        <div class="fy-prog-text" id="fyProgText">Finding anime based on your list...</div>
+        <div class="fy-prog-bar-wrap"><div class="fy-prog-bar" id="fyProgBar"></div></div>
+      </div>
+      <div class="fy-header">
+        <div class="fy-count" id="fyCount"></div>
+        <button class="fy-refresh" id="fyRefresh" onclick="loadRecommendations()">🔄 Refresh</button>
+      </div>
+      <div class="fy-filters">
+        <div class="fy-filter-group">
+          <span class="fy-filter-group-label">Source:</span>
+          <button class="fy-fbtn active" data-src="All" onclick="setFySrcFilter('All',this)">All</button>
+          <button class="fy-fbtn" data-src="Completed" onclick="setFySrcFilter('Completed',this)">Completed</button>
+          <button class="fy-fbtn" data-src="Watching" onclick="setFySrcFilter('Watching',this)">Watching</button>
+          <button class="fy-fbtn" data-src="On Hold" onclick="setFySrcFilter('On Hold',this)">On Hold</button>
+          <button class="fy-fbtn" data-src="Dropped" onclick="setFySrcFilter('Dropped',this)">Dropped</button>
+          <button class="fy-fbtn" data-src="Plan to Watch" onclick="setFySrcFilter('Plan to Watch',this)">Plan to Watch</button>
+        </div>
+      </div>
+      <div class="fy-filters" id="fyGenreFilters"></div>
+      <div class="fy-sort-row">
+        <label>Sort by:</label>
+        <select class="fy-sort-select" id="fySortSelect" onchange="renderFyGrid()">
+          <option value="freq">Most Recommended</option>
+          <option value="score">Highest MAL Score</option>
+          <option value="eps">Most Episodes</option>
+        </select>
+      </div>
+      <div class="fy-grid" id="fyGrid"></div>
+    </div>
+  </main>
+
+  <!-- Add Modal -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <div class="modal-header">
+        <img class="modal-poster" id="mPoster" src="" alt="">
+        <div class="modal-info">
+          <div class="modal-title" id="mTitle"></div>
+          <div class="modal-jp" id="mJp"></div>
+          <div class="modal-score" id="mScore"></div>
+          <div style="font-size:0.75rem;color:var(--text3);margin-top:4px;" id="mEps"></div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-synopsis" id="mSynopsis"></div>
+        <div class="modal-label">Status</div>
+        <div class="status-options" id="mStatusOpts">
+          <button class="status-opt" data-s="Watching">Watching</button>
+          <button class="status-opt" data-s="Completed">Completed</button>
+          <button class="status-opt" data-s="On Hold">On Hold</button>
+          <button class="status-opt" data-s="Dropped">Dropped</button>
+          <button class="status-opt" data-s="Plan to Watch">Plan to Watch</button>
+        </div>
+        <div class="modal-label">Your Rating (optional)</div>
+        <div class="star-rating" id="mStars">
+          <input type="radio" id="s10" name="addRating" value="10"><label for="s10">★</label>
+          <input type="radio" id="s9" name="addRating" value="9"><label for="s9">★</label>
+          <input type="radio" id="s8" name="addRating" value="8"><label for="s8">★</label>
+          <input type="radio" id="s7" name="addRating" value="7"><label for="s7">★</label>
+          <input type="radio" id="s6" name="addRating" value="6"><label for="s6">★</label>
+          <input type="radio" id="s5" name="addRating" value="5"><label for="s5">★</label>
+          <input type="radio" id="s4" name="addRating" value="4"><label for="s4">★</label>
+          <input type="radio" id="s3" name="addRating" value="3"><label for="s3">★</label>
+          <input type="radio" id="s2" name="addRating" value="2"><label for="s2">★</label>
+          <input type="radio" id="s1" name="addRating" value="1"><label for="s1">★</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="mCancel">Cancel</button>
+        <button class="btn-primary" id="mAdd">＋ Add to List</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-header">
+        <img class="modal-poster" id="ePoster" src="" alt="">
+        <div class="modal-info">
+          <div class="modal-title" id="eTitle"></div>
+          <div class="modal-jp" id="eJp"></div>
+          <div class="modal-score" id="eScore"></div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-label">Status</div>
+        <div class="status-options" id="eStatusOpts">
+          <button class="status-opt" data-s="Watching">Watching</button>
+          <button class="status-opt" data-s="Completed">Completed</button>
+          <button class="status-opt" data-s="On Hold">On Hold</button>
+          <button class="status-opt" data-s="Dropped">Dropped</button>
+          <button class="status-opt" data-s="Plan to Watch">Plan to Watch</button>
+        </div>
+        <div class="modal-label">Your Rating</div>
+        <div class="star-rating" id="eStars">
+          <input type="radio" id="e10" name="editRating" value="10"><label for="e10">★</label>
+          <input type="radio" id="e9" name="editRating" value="9"><label for="e9">★</label>
+          <input type="radio" id="e8" name="editRating" value="8"><label for="e8">★</label>
+          <input type="radio" id="e7" name="editRating" value="7"><label for="e7">★</label>
+          <input type="radio" id="e6" name="editRating" value="6"><label for="e6">★</label>
+          <input type="radio" id="e5" name="editRating" value="5"><label for="e5">★</label>
+          <input type="radio" id="e4" name="editRating" value="4"><label for="e4">★</label>
+          <input type="radio" id="e3" name="editRating" value="3"><label for="e3">★</label>
+          <input type="radio" id="e2" name="editRating" value="2"><label for="e2">★</label>
+          <input type="radio" id="e1" name="editRating" value="1"><label for="e1">★</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="eCancel">Cancel</button>
+        <button class="btn-primary" id="eSave">✓ Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Progress Modal -->
+  <div class="modal-overlay" id="importModal">
+    <div class="progress-modal">
+      <div class="progress-header">
+        <div class="progress-icon">📥</div>
+        <div>
+          <div class="progress-title">Importing from MAL XML</div>
+          <div class="progress-subtitle" id="impSubtitle">Parsing file...</div>
+        </div>
+      </div>
+      <div class="progress-body">
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="impBar"></div>
+        </div>
+        <div class="progress-count" id="impCount">0 / 0</div>
+        <div class="progress-log" id="impLog"></div>
+      </div>
+      <div class="progress-footer">
+        <span class="progress-done-msg" id="impDoneMsg" style="display:none"></span>
+        <button class="btn-primary" id="impClose" style="display:none;flex:0;padding:10px 24px;">Done</button>
+      </div>
+    </div>
+  </div>
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal auth-modal-box">
+      <div class="modal-header">
+        <div class="modal-info">
+          <div class="modal-title">AniTrack Account</div>
+          <div class="modal-jp">Sign in to sync your list across devices &#9749;</div>
+        </div>
+        <button onclick="closeAuthModal()"
+          style="background:none;border:none;color:#64748b;font-size:1.2rem;cursor:pointer;margin-left:auto;">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <div class="config-warn" id="configWarn" style="display:none">
+          &#9888; Supabase not configured. Open anime-list.html and set <code>SUPABASE_URL</code> and
+          <code>SUPABASE_ANON_KEY</code> in the script block.
+        </div>
+        <div class="auth-tabs">
+          <div class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</div>
+          <div class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+        <div class="auth-form" id="loginForm">
+          <input class="auth-input" id="liEmail" type="email" placeholder="Email address" autocomplete="email">
+          <input class="auth-input" id="liPass" type="password" placeholder="Password" autocomplete="current-password">
+          <div class="auth-err" id="liErr"></div>
+          <button class="btn-primary" id="liBtn" onclick="doLogin()">Sign In</button>
+          <div class="auth-divider">or</div>
+          <button class="google-btn" onclick="doGoogleLogin()"><svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#FFC107"
+                d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z" />
+              <path fill="#FF3D00"
+                d="m6.3 14.7 6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 9 6.3 14.7z" />
+              <path fill="#4CAF50"
+                d="M24 44c5.2 0 10-1.9 13.6-5.1l-6.3-5.1C29.5 35.6 26.9 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.6 5.1C9.7 39 16.3 44 24 44z" />
+              <path fill="#1976D2"
+                d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l6.3 5.1C40.5 36.2 44 30.5 44 24c0-1.3-.1-2.7-.4-4z" />
+            </svg> Continue with Google</button>
+        </div>
+        <div class="auth-form hidden" id="signupForm">
+          <input class="auth-input" id="suEmail" type="email" placeholder="Email address" autocomplete="email">
+          <input class="auth-input" id="suPass" type="password" placeholder="Password (min 6 chars)"
+            autocomplete="new-password">
+          <div class="auth-err" id="suErr"></div>
+          <div class="auth-ok" id="suOk"></div>
+          <button class="btn-primary" onclick="doSignup()">Create Account</button>
+          <div class="auth-divider">or</div>
+          <button class="google-btn" onclick="doGoogleLogin()"><svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#FFC107"
+                d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z" />
+              <path fill="#FF3D00"
+                d="m6.3 14.7 6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 9 6.3 14.7z" />
+              <path fill="#4CAF50"
+                d="M24 44c5.2 0 10-1.9 13.6-5.1l-6.3-5.1C29.5 35.6 26.9 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.6 5.1C9.7 39 16.3 44 24 44z" />
+              <path fill="#1976D2"
+                d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l6.3 5.1C40.5 36.2 44 30.5 44 24c0-1.3-.1-2.7-.4-4z" />
+            </svg> Continue with Google</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // ── SUPABASE CONFIG ────────────────────────────────────────────
+    // 1. Create project at https://supabase.com
+    // 2. SQL Editor → run:
+    //    create table anime_list (id bigint generated always as identity primary key,
+    //      user_id uuid references auth.users(id) on delete cascade not null,
+    //      anime_id text not null, data jsonb not null, updated_at timestamptz default now(),
+    //      unique(user_id, anime_id));
+    //    alter table anime_list enable row level security;
+    //    create policy "own" on anime_list for all using (auth.uid() = user_id);
+    // 3. Fill in below (Settings → API):
+    const SUPABASE_URL = 'https://kqkwqsfqsifznqfbzsmq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa3dxc2Zxc2lmem5xZmJ6c21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NjA3NjEsImV4cCI6MjA5MzUzNjc2MX0.F2LVNzoK1OYqBez4cxSTHKcwE6_EVubCaraQaDPxh9A';
+    const SB_OK = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length > 20;
+    let sb = null;
+    if (SB_OK) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ── STATE ──────────────────────────────────────────────────────
+    let animeList = JSON.parse(localStorage.getItem('anitrack_list') || '[]');
+    let currentFilter = 'All';
+    let currentAnimeData = null;
+    let editId = null;
+    let ddIndex = -1;
+    let ddItems = [];
+    let currentUser = null;
+
+    // ── STORAGE ────────────────────────────────────────────────────
+    // Toast notification for sync status
+    function showToast(msg, type = 'ok') {
+      let t = document.getElementById('sbToast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'sbToast';
+        t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9998;padding:10px 18px;border-radius:10px;font-family:Nunito,sans-serif;font-size:0.82rem;font-weight:700;transition:opacity 0.4s ease;opacity:0;pointer-events:none;max-width:320px;';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.background = type === 'ok' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+      t.style.border = type === 'ok' ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(239,68,68,0.4)';
+      t.style.color = type === 'ok' ? '#4ade80' : '#f87171';
+      t.style.opacity = '1';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
+    }
+
+    async function saveItem(item) {
+      // Save to localStorage immediately
+      localStorage.setItem('anitrack_list', JSON.stringify(animeList));
+      if (!sb || !currentUser) return;
+      try {
+        const row = { user_id: currentUser.id, anime_id: item.id, data: item, updated_at: new Date().toISOString() };
+        const { error } = await sb.from('anime_list').upsert(row, { onConflict: 'user_id,anime_id' });
+        if (error) throw error;
+        showToast('☁ Synced to cloud', 'ok');
+      } catch (err) {
+        console.error('Supabase save error:', err);
+        showToast('⚠ Cloud sync failed: ' + (err.message || err), 'err');
+      }
+    }
+
+    async function save() {
+      localStorage.setItem('anitrack_list', JSON.stringify(animeList));
+      if (!sb || !currentUser) return;
+      try {
+        const rows = animeList.map(a => ({ user_id: currentUser.id, anime_id: a.id, data: a, updated_at: new Date().toISOString() }));
+        if (!rows.length) return;
+        const { error } = await sb.from('anime_list').upsert(rows, { onConflict: 'user_id,anime_id' });
+        if (error) throw error;
+      } catch (err) {
+        console.error('Supabase save error:', err);
+        showToast('⚠ Cloud sync failed: ' + (err.message || err), 'err');
+      }
+    }
+
+    // ── STATS ──────────────────────────────────────────────────────
+    function updateStats() {
+      const tot = animeList.length;
+      const comp = animeList.filter(a => a.status === 'Completed').length;
+      const watch = animeList.filter(a => a.status === 'Watching').length;
+      const hold = animeList.filter(a => a.status === 'On Hold').length;
+      const drop = animeList.filter(a => a.status === 'Dropped').length;
+      const plan = animeList.filter(a => a.status === 'Plan to Watch').length;
+      const eps = animeList.filter(a => a.status === 'Completed').reduce((s, a) => s + (a.episodes || 0), 0);
+      document.getElementById('sTot').textContent = tot;
+      document.getElementById('sComp').textContent = comp;
+      document.getElementById('sWatch').textContent = watch;
+      document.getElementById('sHold').textContent = hold;
+      document.getElementById('sDrop').textContent = drop;
+      document.getElementById('sPlan').textContent = plan;
+      document.getElementById('sEps').textContent = eps;
+    }
+
+    // ── RENDER CARDS ───────────────────────────────────────────────
+    function renderGrid() {
+      const grid = document.getElementById('animeGrid');
+      const q = document.getElementById('listSearch').value.toLowerCase();
+      const sort = document.getElementById('sortSelect').value;
+      let list = animeList.slice();
+      if (currentFilter !== 'All') list = list.filter(a => a.status === currentFilter);
+      if (q) list = list.filter(a => a.title.toLowerCase().includes(q) || (a.titleJp || '').toLowerCase().includes(q));
+      if (sort === 'title') list.sort((a, b) => a.title.localeCompare(b.title));
+      else if (sort === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      else if (sort === 'score') list.sort((a, b) => (b.score || 0) - (a.score || 0));
+      else list.sort((a, b) => b.addedAt - a.addedAt);
+
+      if (!list.length) {
+        grid.innerHTML = `<div class="empty-state"><div class="icon">🎌</div><p>No anime here yet!</p><small>Search above to add anime to your list.</small></div>`;
+        return;
+      }
+      grid.innerHTML = list.map(a => {
+        const sk = a.status.replace(/\s+/g, '-');
+        const stars = a.rating ? '★'.repeat(a.rating) + '<span style="color:var(--text3)">' + '★'.repeat(10 - a.rating) + '</span>' : '';
+        return `<div class="anime-card" data-id="${a.id}" onclick="openEdit('${a.id}')">
+      <button class="card-del" onclick="event.stopPropagation();deleteAnime('${a.id}')">✕</button>
+      <div class="card-poster">
+        <img src="${a.poster}" alt="${a.title}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'180\\' height=\\'260\\'%3E%3Crect fill=\\'%230f0f1a\\' width=\\'180\\' height=\\'260\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' fill=\\'%237c3aed\\' text-anchor=\\'middle\\' dy=\\'.3em\\' font-size=\\'40\\'%3E🎌%3C/text%3E%3C/svg%3E'">
+        <div class="card-overlay"><div class="overlay-synopsis">${a.synopsis || 'No synopsis available.'}</div></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${a.title}</div>
+        <span class="status-badge status-${sk}">${a.status}</span>
+        <div class="card-meta">
+          <span class="card-stars">${stars}</span>
+          <span class="card-score">⭐ ${a.score || 'N/A'}</span>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text3);margin-top:4px;">${a.episodes ? a.episodes + ' eps' : ''}</div>
+      </div>
+    </div>`;
+      }).join('');
+      updateStats();
+    }
+
+    // ── DELETE ─────────────────────────────────────────────────────
+    async function deleteAnime(id) {
+      animeList = animeList.filter(a => a.id !== id);
+      if (sb && currentUser) await sb.from('anime_list').delete().match({ user_id: currentUser.id, anime_id: id });
+      save(); renderGrid();
+    }
+
+    // ── ADD MODAL ──────────────────────────────────────────────────
+    function openAddModal(data) {
+      currentAnimeData = data;
+      document.getElementById('mPoster').src = data.poster;
+      document.getElementById('mTitle').textContent = data.title;
+      document.getElementById('mJp').textContent = data.titleJp || '';
+      document.getElementById('mScore').textContent = data.score ? '⭐ MAL Score: ' + data.score : '';
+      document.getElementById('mEps').textContent = data.episodes ? data.episodes + ' episodes' : '';
+      document.getElementById('mSynopsis').textContent = data.synopsis || 'No synopsis available.';
+      document.querySelectorAll('#mStatusOpts .status-opt').forEach(b => b.classList.remove('sel'));
+      document.querySelectorAll('input[name="addRating"]').forEach(r => r.checked = false);
+      document.getElementById('addModal').classList.add('show');
+      closeDropdown();
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.remove('show');
+      currentAnimeData = null;
+    }
+
+    // ── EDIT MODAL ─────────────────────────────────────────────────
+    function openEdit(id) {
+      const a = animeList.find(x => x.id === id);
+      if (!a) return;
+      editId = id;
+      document.getElementById('ePoster').src = a.poster;
+      document.getElementById('eTitle').textContent = a.title;
+      document.getElementById('eJp').textContent = a.titleJp || '';
+      document.getElementById('eScore').textContent = a.score ? '⭐ MAL Score: ' + a.score : '';
+      document.querySelectorAll('#eStatusOpts .status-opt').forEach(b => {
+        b.classList.toggle('sel', b.dataset.s === a.status);
+      });
+      document.querySelectorAll('input[name="editRating"]').forEach(r => {
+        r.checked = parseInt(r.value) === a.rating;
+      });
+      document.getElementById('editModal').classList.add('show');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('show');
+      editId = null;
+    }
+
+    // ── SEARCH & DROPDOWN ──────────────────────────────────────────
+    let debTimer;
+    function onSearch(q) {
+      clearTimeout(debTimer);
+      if (!q.trim()) { closeDropdown(); return; }
+      debTimer = setTimeout(() => fetchSuggestions(q), 500);
+    }
+
+    async function fetchSuggestions(q) {
+      const loading = document.getElementById('searchLoading');
+      loading.style.display = 'block';
+      document.querySelector('.search-icon').style.display = 'none';
+      try {
+        const r = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=8&sfw=false`);
+        const json = await r.json();
+        renderDropdown(json.data || []);
+      } catch (e) {
+        renderDropdown([]);
+      } finally {
+        loading.style.display = 'none';
+        document.querySelector('.search-icon').style.display = 'block';
+      }
+    }
+
+    function renderDropdown(items) {
+      const dd = document.getElementById('dropdown');
+      ddItems = items;
+      ddIndex = -1;
+      if (!items.length) {
+        dd.innerHTML = '<div class="dropdown-no-result">😔 No anime found</div>';
+        dd.classList.add('show');
+        return;
+      }
+      dd.innerHTML = items.map((a, i) => {
+        const img = a.images?.jpg?.small_image_url || '';
+        const title = a.title_english || a.title || '';
+        const jp = a.title || '';
+        const year = a.year || (a.aired?.from ? new Date(a.aired.from).getFullYear() : '?');
+        const eps = a.episodes ? a.episodes + ' eps' : '? eps';
+        const score = a.score ? '⭐' + a.score : 'N/A';
+        return `<div class="dropdown-item" data-i="${i}" onmousedown="selectSuggestion(${i})">
+      <img src="${img}" alt="" onerror="this.style.display='none'">
+      <div class="dropdown-info">
+        <div class="dropdown-title">${title}</div>
+        <div class="dropdown-jp">${jp !== title ? jp : ''}</div>
+        <div class="dropdown-meta">
+          <span class="dropdown-badge">${year}</span>
+          <span class="dropdown-badge">${eps}</span>
+          <span class="dropdown-badge">${score}</span>
+        </div>
+      </div>
+    </div>`;
+      }).join('');
+      dd.classList.add('show');
+    }
+
+    function selectSuggestion(i) {
+      const a = ddItems[i];
+      if (!a) return;
+      openAddModal({
+        id: String(a.mal_id),
+        title: a.title_english || a.title,
+        titleJp: a.title,
+        poster: a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || '',
+        synopsis: a.synopsis,
+        score: a.score,
+        episodes: a.episodes,
+        year: a.year || (a.aired?.from ? new Date(a.aired.from).getFullYear() : null),
+        genres: (a.genres || []).map(g => g.name),
+      });
+      document.getElementById('searchInput').value = '';
+    }
+
+    function closeDropdown() {
+      document.getElementById('dropdown').classList.remove('show');
+      ddIndex = -1;
+    }
+
+    // Keyboard nav
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+      const items = document.querySelectorAll('.dropdown-item');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); ddIndex = Math.min(ddIndex + 1, items.length - 1); items.forEach((el, i) => el.classList.toggle('active', i === ddIndex)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); ddIndex = Math.max(ddIndex - 1, 0); items.forEach((el, i) => el.classList.toggle('active', i === ddIndex)); }
+      else if (e.key === 'Enter' && ddIndex >= 0) selectSuggestion(ddIndex);
+      else if (e.key === 'Escape') closeDropdown();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', e => onSearch(e.target.value));
+    document.addEventListener('click', e => { if (!e.target.closest('.search-wrap')) closeDropdown(); });
+
+    // ── ADD LOGIC ──────────────────────────────────────────────────
+    document.getElementById('mAdd').addEventListener('click', () => {
+      if (!currentAnimeData) return;
+      const status = document.querySelector('#mStatusOpts .status-opt.sel')?.dataset.s;
+      if (!status) { alert('Please select a status!'); return; }
+      const ratingEl = document.querySelector('input[name="addRating"]:checked');
+      const rating = ratingEl ? parseInt(ratingEl.value) : 0;
+      // Check duplicate
+      if (animeList.find(a => a.id === currentAnimeData.id)) {
+        alert('This anime is already in your list!'); return;
+      }
+      const newItem = { ...currentAnimeData, status, rating, addedAt: Date.now() };
+      animeList.push(newItem);
+      saveItem(newItem); renderGrid(); closeAddModal();
+    });
+    document.getElementById('mCancel').addEventListener('click', closeAddModal);
+    document.getElementById('addModal').addEventListener('click', e => { if (e.target === document.getElementById('addModal')) closeAddModal(); });
+
+    document.querySelectorAll('#mStatusOpts .status-opt').forEach(b => {
+      b.addEventListener('click', () => { document.querySelectorAll('#mStatusOpts .status-opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); });
+    });
+
+    // ── EDIT LOGIC ─────────────────────────────────────────────────
+    document.getElementById('eSave').addEventListener('click', () => {
+      if (!editId) return;
+      const status = document.querySelector('#eStatusOpts .status-opt.sel')?.dataset.s;
+      if (!status) { alert('Please select a status!'); return; }
+      const ratingEl = document.querySelector('input[name="editRating"]:checked');
+      const rating = ratingEl ? parseInt(ratingEl.value) : 0;
+      const idx = animeList.findIndex(a => a.id === editId);
+      if (idx >= 0) { animeList[idx].status = status; animeList[idx].rating = rating; saveItem(animeList[idx]); }
+      renderGrid(); closeEditModal();
+    });
+    document.getElementById('eCancel').addEventListener('click', closeEditModal);
+    document.getElementById('editModal').addEventListener('click', e => { if (e.target === document.getElementById('editModal')) closeEditModal(); });
+
+    document.querySelectorAll('#eStatusOpts .status-opt').forEach(b => {
+      b.addEventListener('click', () => { document.querySelectorAll('#eStatusOpts .status-opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); });
+    });
+
+    // ── FILTER ─────────────────────────────────────────────────────
+    document.getElementById('filterBtns').addEventListener('click', e => {
+      if (!e.target.classList.contains('filter-btn')) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      currentFilter = e.target.dataset.filter;
+      renderGrid();
+    });
+
+    document.getElementById('listSearch').addEventListener('input', renderGrid);
+    document.getElementById('sortSelect').addEventListener('change', renderGrid);
+
+    // ── EXPORT MAL XML ─────────────────────────────────────────────
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const sMap = { 'Watching': 1, 'Completed': 2, 'On Hold': 3, 'Dropped': 4, 'Plan to Watch': 6 };
+      const entries = animeList.map(a => `  <anime>
+    <series_animedb_id>${a.id}</series_animedb_id>
+    <series_title><![CDATA[${a.title}]]></series_title>
+    <series_type>TV</series_type>
+    <series_episodes>${a.episodes || 0}</series_episodes>
+    <my_id>0</my_id>
+    <my_watched_episodes>${a.status === 'Completed' ? (a.episodes || 0) : 0}</my_watched_episodes>
+    <my_start_date>0000-00-00</my_start_date>
+    <my_finish_date>0000-00-00</my_finish_date>
+    <my_score>${a.rating || 0}</my_score>
+    <my_status>${sMap[a.status] || 6}</my_status>
+    <my_rewatching>0</my_rewatching>
+    <my_rewatching_ep>0</my_rewatching_ep>
+    <my_last_updated>${Math.floor(a.addedAt / 1000)}</my_last_updated>
+    <my_tags></my_tags>
+    <update_on_import>1</update_on_import>
+  </anime>`).join('\n');
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<myanimelist>
+  <myinfo>
+    <user_export_type>1</user_export_type>
+    <user_total_anime>${animeList.length}</user_total_anime>
+    <user_total_watching>${animeList.filter(a => a.status === 'Watching').length}</user_total_watching>
+    <user_total_completed>${animeList.filter(a => a.status === 'Completed').length}</user_total_completed>
+    <user_total_onhold>${animeList.filter(a => a.status === 'On Hold').length}</user_total_onhold>
+    <user_total_dropped>${animeList.filter(a => a.status === 'Dropped').length}</user_total_dropped>
+    <user_total_plantowatch>${animeList.filter(a => a.status === 'Plan to Watch').length}</user_total_plantowatch>
+  </myinfo>
+${entries}
+</myanimelist>`;
+      const blob = new Blob([xml], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'myanimelist.xml'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── IMPORT MAL XML ────────────────────────────────────────────
+    const STATUS_FROM_CODE = { '1': 'Watching', '2': 'Completed', '3': 'On Hold', '4': 'Dropped', '6': 'Plan to Watch' };
+
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('importFile').value = '';
+      document.getElementById('importFile').click();
+    });
+
+    document.getElementById('importFile').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, 'application/xml');
+      const entries = Array.from(xml.querySelectorAll('anime'));
+      if (!entries.length) { alert('No anime entries found in the XML file.'); return; }
+      startImport(entries);
+    });
+
+    async function startImport(entries) {
+      const modal = document.getElementById('importModal');
+      const bar = document.getElementById('impBar');
+      const count = document.getElementById('impCount');
+      const log = document.getElementById('impLog');
+      const subtitle = document.getElementById('impSubtitle');
+      const doneMsg = document.getElementById('impDoneMsg');
+      const closeBtn = document.getElementById('impClose');
+
+      // Reset UI
+      bar.style.width = '0%';
+      log.innerHTML = '';
+      count.textContent = '0 / ' + entries.length;
+      subtitle.textContent = 'Fetching anime details from Jikan API...';
+      doneMsg.style.display = 'none';
+      closeBtn.style.display = 'none';
+      modal.classList.add('show');
+
+      let added = 0, skipped = 0, failed = 0;
+      const total = entries.length;
+
+      function addLog(msg, cls) {
+        const line = document.createElement('div');
+        line.className = cls;
+        line.textContent = msg;
+        log.appendChild(line);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      // Helper: fetch with automatic retry on 429 rate-limit
+      async function jikanFetch(url, retries = 3) {
+        for (let r = 0; r < retries; r++) {
+          const res = await fetch(url);
+          if (res.ok) return res;
+          if (res.status === 429) {
+            const wait = (r + 1) * 1500;   // back off: 1.5s, 3s, 4.5s
+            addLog('⏳ Rate limited, waiting ' + (wait / 1000) + 's...', 'log-skip');
+            await delay(wait);
+          } else {
+            return res;   // non-429 error, return as-is
+          }
+        }
+        return null;
+      }
+
+      for (let i = 0; i < total; i++) {
+        const entry = entries[i];
+        const malId = entry.querySelector('series_animedb_id')?.textContent?.trim();
+        const rawTitle = entry.querySelector('series_title')?.textContent?.trim() || 'Unknown';
+        const statusCode = entry.querySelector('my_status')?.textContent?.trim();
+        const myScore = parseInt(entry.querySelector('my_score')?.textContent?.trim()) || 0;
+        const status = STATUS_FROM_CODE[statusCode] || 'Plan to Watch';
+
+        // Update progress
+        const pct = Math.round(((i) / total) * 100);
+        bar.style.width = pct + '%';
+        count.textContent = (i + 1) + ' / ' + total;
+        subtitle.textContent = 'Processing: ' + rawTitle;
+
+        // Skip if no MAL ID
+        if (!malId) {
+          addLog('✗ No MAL ID for: ' + rawTitle, 'log-err');
+          failed++;
+          continue;
+        }
+
+        // Skip duplicate
+        if (animeList.find(a => a.id === malId)) {
+          addLog('⏭ Skipped (already in list): ' + rawTitle, 'log-skip');
+          skipped++;
+          await delay(50);
+          continue;
+        }
+
+        // Fetch from Jikan by exact MAL ID
+        try {
+          const res = await jikanFetch('https://api.jikan.moe/v4/anime/' + malId);
+          if (res && res.ok) {
+            const json = await res.json();
+            const d = json.data;
+            if (d) {
+              const newItem = {
+                id: String(d.mal_id),
+                title: d.title_english || d.title || rawTitle,
+                titleJp: d.title || rawTitle,
+                poster: d.images?.jpg?.large_image_url || d.images?.jpg?.image_url || '',
+                synopsis: d.synopsis || '',
+                score: d.score || null,
+                episodes: d.episodes || null,
+                year: d.year || null,
+                genres: (d.genres || []).map(g => g.name),
+                status,
+                rating: myScore,
+                addedAt: Date.now() - (total - i),
+              };
+              animeList.push(newItem);
+              addLog('✓ Added: ' + newItem.title + ' [' + status + ']', 'log-ok');
+              added++;
+            } else {
+              addLog('✗ No data for ID ' + malId + ': ' + rawTitle, 'log-err');
+              failed++;
+            }
+          } else {
+            addLog('✗ Failed to fetch ID ' + malId + ': ' + rawTitle, 'log-err');
+            failed++;
+          }
+        } catch (err) {
+          addLog('✗ Error fetching ID ' + malId + ': ' + rawTitle, 'log-err');
+          failed++;
+        }
+        // Jikan rate limit: ~3 req/sec, use 350ms gap
+        await delay(350);
+      }
+
+      // Batch save everything at the end
+      save();
+
+      bar.style.width = '100%';
+      count.textContent = total + ' / ' + total;
+      subtitle.textContent = 'Import complete!';
+      doneMsg.style.display = 'flex';
+      doneMsg.textContent = '✅ ' + added + ' added · ' + skipped + ' skipped · ' + failed + ' failed';
+      closeBtn.style.display = 'block';
+      addLog('─── Done: ' + added + ' added, ' + skipped + ' skipped, ' + failed + ' failed ───', 'log-info');
+      renderGrid();
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    document.getElementById('impClose').addEventListener('click', () => {
+      document.getElementById('importModal').classList.remove('show');
+    });
+
+    // ── AUTH FUNCTIONS ────────────────────────────────────────────
+    function updateUserUI(user) {
+      const sec = document.getElementById('userSection');
+      const lBtn = document.getElementById('loginBtn');
+      if (user) {
+        const init = (user.user_metadata?.full_name || user.email || '?')[0].toUpperCase();
+        sec.innerHTML = `<span class="cloud-badge">&#9729; Synced</span><div class="user-avatar" title="${user.email}">${init}</div><span class="user-email">${user.email}</span><button class="logout-btn" onclick="doSignOut()">Sign Out</button>`;
+        if (lBtn) lBtn.style.display = 'none';
+      } else {
+        sec.innerHTML = '';
+        if (lBtn) lBtn.style.display = 'block';
+      }
+    }
+
+    async function loadFromSupabase() {
+      if (!sb || !currentUser) return;
+      showToast('☁ Loading your list...', 'ok');
+      try {
+        const { data, error } = await sb
+          .from('anime_list')
+          .select('data')
+          .eq('user_id', currentUser.id)
+          .order('updated_at', { ascending: false });
+        if (error) throw error;
+
+        // Cloud is source of truth
+        const cloudList = data.map(r => r.data);
+        const cloudIds = new Set(cloudList.map(a => a.id));
+
+        // Push any local-only items up to cloud (first-time login migration)
+        const localOnly = animeList.filter(a => !cloudIds.has(a.id));
+        if (localOnly.length > 0) {
+          const rows = localOnly.map(a => ({
+            user_id: currentUser.id,
+            anime_id: a.id,
+            data: a,
+            updated_at: new Date().toISOString()
+          }));
+          await sb.from('anime_list').upsert(rows, { onConflict: 'user_id,anime_id' });
+          cloudList.push(...localOnly);
+        }
+
+        // Replace everything with authoritative cloud list
+        animeList = cloudList;
+        localStorage.setItem('anitrack_list', JSON.stringify(animeList));
+        showToast('☁ ' + animeList.length + ' anime synced from cloud', 'ok');
+        renderGrid();
+      } catch (err) {
+        console.error('loadFromSupabase error:', err);
+        showToast('⚠ Cloud load failed: ' + (err.message || err), 'err');
+      }
+    }
+
+    function openAuthModal() {
+      document.getElementById('configWarn').style.display = SB_OK ? 'none' : 'block';
+      document.getElementById('authModal').classList.add('show');
+    }
+    function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
+
+    function switchTab(t) {
+      document.getElementById('loginForm').classList.toggle('hidden', t !== 'login');
+      document.getElementById('signupForm').classList.toggle('hidden', t !== 'signup');
+      document.getElementById('tabLogin').classList.toggle('active', t === 'login');
+      document.getElementById('tabSignup').classList.toggle('active', t === 'signup');
+      document.getElementById('liErr').textContent = '';
+      document.getElementById('suErr').textContent = '';
+      document.getElementById('suOk').textContent = '';
+    }
+
+    async function doLogin() {
+      if (!sb) { openAuthModal(); return; }
+      const email = document.getElementById('liEmail').value.trim();
+      const pass = document.getElementById('liPass').value;
+      const errEl = document.getElementById('liErr');
+      if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; return; }
+      const btn = document.getElementById('liBtn');
+      btn.textContent = 'Signing in...'; btn.disabled = true;
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      btn.textContent = 'Sign In'; btn.disabled = false;
+      if (error) errEl.textContent = error.message;
+      else closeAuthModal();
+    }
+
+    async function doSignup() {
+      if (!sb) { openAuthModal(); return; }
+      const email = document.getElementById('suEmail').value.trim();
+      const pass = document.getElementById('suPass').value;
+      const errEl = document.getElementById('suErr');
+      const okEl = document.getElementById('suOk');
+      if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; return; }
+      const { error } = await sb.auth.signUp({ email, password: pass });
+      if (error) { errEl.textContent = error.message; okEl.textContent = ''; }
+      else { okEl.textContent = '&#10003; Check your email to confirm your account!'; errEl.textContent = ''; }
+    }
+
+    async function doGoogleLogin() {
+      if (!sb) { openAuthModal(); return; }
+      await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    }
+
+    async function doSignOut() {
+      if (sb) await sb.auth.signOut();
+      currentUser = null;
+      // Clear list so another user's cached data doesn't show
+      animeList = [];
+      localStorage.removeItem('anitrack_list');
+      updateUserUI(null);
+      renderGrid();
+    }
+
+    async function initAuth() {
+      if (!sb) return;
+
+      // Check for an already-active session (e.g. page refresh, returning user)
+      const { data: { session } } = await sb.auth.getSession();
+      if (session?.user) {
+        currentUser = session.user;
+        updateUserUI(currentUser);
+        showApp();            // skip landing page — user already logged in
+        await loadFromSupabase();
+      }
+
+      // Listen for future auth events
+      sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          currentUser = session.user;
+          updateUserUI(currentUser);
+          closeAuthModal();
+          showApp();          // hide landing after login
+          await loadFromSupabase();
+        } else if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          updateUserUI(null);
+        }
+      });
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', openAuthModal);
+    document.getElementById('authModal').addEventListener('click', e => { if (e.target === document.getElementById('authModal')) closeAuthModal(); });
+
+    
+// ── LANDING PAGE ──────────────────────────────────────────────
+function showApp() {
+  const el = document.getElementById('appLanding');
+  if (!el) return;
+  el.classList.add('hide');
+  setTimeout(() => { el.style.display = 'none'; }, 650);
+}
+
+function skipToApp() { showApp(); }
+
+function lTab(t) {
+  document.getElementById('lLoginForm').classList.toggle('hidden', t !== 'login');
+  document.getElementById('lSignupForm').classList.toggle('hidden', t !== 'signup');
+  document.getElementById('ltabLogin').classList.toggle('active', t === 'login');
+  document.getElementById('ltabSignup').classList.toggle('active', t === 'signup');
+  document.getElementById('lErr').textContent = '';
+  document.getElementById('lSuErr').textContent = '';
+  document.getElementById('lSuOk').textContent = '';
+}
+
+async function doLandingLogin() {
+  if (!sb) { alert('Supabase not configured. Use local mode.'); return; }
+  const email = document.getElementById('lEmail').value.trim();
+  const pass  = document.getElementById('lPass').value;
+  const errEl = document.getElementById('lErr');
+  if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; return; }
+  const btn = document.getElementById('lBtn');
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.textContent = 'Sign In'; btn.disabled = false;
+  if (error) errEl.textContent = error.message;
+  else showApp();
+}
+
+async function doLandingSignup() {
+  if (!sb) { alert('Supabase not configured. Use local mode.'); return; }
+  const email = document.getElementById('lSuEmail').value.trim();
+  const pass  = document.getElementById('lSuPass').value;
+  const errEl = document.getElementById('lSuErr');
+  const okEl  = document.getElementById('lSuOk');
+  if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; return; }
+  const { error } = await sb.auth.signUp({ email, password: pass });
+  if (error) { errEl.textContent = error.message; }
+  else { okEl.textContent = '\u2713 Check your email to confirm, then sign in!'; errEl.textContent = ''; }
+}
+
+async function checkExistingSession() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) showApp();
+}
+
+
+    // ── FOR YOU TAB ───────────────────────────────────────────────
+    let recList = [];              // all recommendations
+    let dismissedIds = JSON.parse(localStorage.getItem('anitrack_dismissed') || '[]');
+    let fySrcFilter = 'All';
+    let fyGenreFilter = 'All';
+    let fyLoading = false;
+
+    function switchMainTab(tab) {
+      document.querySelectorAll('.main-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      const listEls = [document.getElementById('statsBar'), document.querySelector('.filter-section'), document.getElementById('animeGrid')];
+      const fyEl = document.getElementById('forYouSection');
+      if (tab === 'mylist') {
+        listEls.forEach(e => { if(e) e.style.display = ''; });
+        fyEl.classList.remove('visible');
+      } else {
+        listEls.forEach(e => { if(e) e.style.display = 'none'; });
+        fyEl.classList.add('visible');
+        if (!recList.length && !fyLoading) loadRecommendations();
+      }
+    }
+
+    function setFySrcFilter(v, btn) {
+      fySrcFilter = v;
+      btn.closest('.fy-filter-group').querySelectorAll('.fy-fbtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFyGrid();
+    }
+
+    function setFyGenreFilter(v, btn) {
+      fyGenreFilter = v;
+      document.getElementById('fyGenreFilters').querySelectorAll('.fy-fbtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFyGrid();
+    }
+
+    async function loadRecommendations() {
+      if (fyLoading) return;
+      fyLoading = true;
+      const refreshBtn = document.getElementById('fyRefresh');
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = '⏳ Loading...';
+
+      const prog = document.getElementById('fyProgress');
+      const progText = document.getElementById('fyProgText');
+      const progBar = document.getElementById('fyProgBar');
+      prog.classList.add('visible');
+      progBar.style.width = '0%';
+
+      // Take top 20 anime from user's list (prioritize Completed & Watching)
+      const statusPriority = {'Completed':0,'Watching':1,'On Hold':2,'Plan to Watch':3,'Dropped':4};
+      const sorted = animeList.slice().sort((a,b) => (statusPriority[a.status]||5) - (statusPriority[b.status]||5));
+      const sources = sorted.slice(0, 20);
+
+      if (!sources.length) {
+        prog.classList.remove('visible');
+        refreshBtn.disabled = false;
+        refreshBtn.innerHTML = '🔄 Refresh';
+        fyLoading = false;
+        document.getElementById('fyGrid').innerHTML = '<div class="fy-empty"><div class="icon">📭</div><p>Add some anime to your list first!</p><small>Recommendations will be based on your anime.</small></div>';
+        return;
+      }
+
+      progText.textContent = 'Finding anime based on your ' + sources.length + ' anime...';
+      const rawRecs = {};  // malId -> { data, freq, sources[] }
+      const existingIds = new Set(animeList.map(a => a.id));
+
+      for (let i = 0; i < sources.length; i++) {
+        const src = sources[i];
+        const pct = Math.round(((i + 1) / sources.length) * 100);
+        progBar.style.width = pct + '%';
+        progText.textContent = '(' + (i+1) + '/' + sources.length + ') Checking recs for: ' + src.title;
+
+        try {
+          const res = await fetch('https://api.jikan.moe/v4/anime/' + src.id + '/recommendations');
+          if (res.status === 429) {
+            progText.textContent = '⏳ Rate limited, waiting...';
+            await delay(2000);
+            i--; continue;
+          }
+          if (res.ok) {
+            const json = await res.json();
+            const recs = (json.data || []).slice(0, 10);
+            for (const rec of recs) {
+              const entry = rec.entry;
+              const mid = String(entry.mal_id);
+              if (existingIds.has(mid)) continue;
+              if (dismissedIds.includes(mid)) continue;
+              if (!rawRecs[mid]) {
+                rawRecs[mid] = {
+                  id: mid,
+                  title: entry.title || '',
+                  poster: entry.images?.jpg?.large_image_url || entry.images?.jpg?.image_url || '',
+                  url: entry.url || '',
+                  freq: 0,
+                  sources: [],
+                  score: null,
+                  episodes: null,
+                  genres: [],
+                };
+              }
+              rawRecs[mid].freq++;
+              rawRecs[mid].sources.push({ title: src.title, status: src.status });
+            }
+          }
+        } catch(e) { /* skip */ }
+
+        await delay(500);
+      }
+
+      // Now fetch details for top recs (by frequency), limit to 30
+      const topRecs = Object.values(rawRecs).sort((a,b) => b.freq - a.freq).slice(0, 30);
+      progText.textContent = 'Fetching details for ' + topRecs.length + ' recommendations...';
+
+      for (let i = 0; i < topRecs.length; i++) {
+        const r = topRecs[i];
+        const pct = Math.round(((i + 1) / topRecs.length) * 100);
+        progBar.style.width = pct + '%';
+        progText.textContent = '(' + (i+1) + '/' + topRecs.length + ') Loading: ' + r.title;
+
+        try {
+          const res = await fetch('https://api.jikan.moe/v4/anime/' + r.id);
+          if (res.status === 429) {
+            progText.textContent = '⏳ Rate limited, waiting...';
+            await delay(2000);
+            i--; continue;
+          }
+          if (res.ok) {
+            const json = await res.json();
+            const d = json.data;
+            if (d) {
+              r.title = d.title_english || d.title || r.title;
+              r.titleJp = d.title || '';
+              r.poster = d.images?.jpg?.large_image_url || d.images?.jpg?.image_url || r.poster;
+              r.score = d.score || null;
+              r.episodes = d.episodes || null;
+              r.synopsis = d.synopsis || '';
+              r.year = d.year || null;
+              r.genres = (d.genres || []).map(g => g.name);
+            }
+          }
+        } catch(e) { /* skip */ }
+        await delay(400);
+      }
+
+      recList = topRecs;
+      progBar.style.width = '100%';
+      progText.textContent = 'Done! Found ' + recList.length + ' recommendations.';
+      setTimeout(() => prog.classList.remove('visible'), 1500);
+
+      refreshBtn.disabled = false;
+      refreshBtn.innerHTML = '🔄 Refresh';
+      fyLoading = false;
+
+      buildGenreFilters();
+      renderFyGrid();
+    }
+
+    function buildGenreFilters() {
+      const genres = new Set();
+      recList.forEach(r => (r.genres || []).forEach(g => genres.add(g)));
+      const container = document.getElementById('fyGenreFilters');
+      if (!genres.size) { container.innerHTML = ''; return; }
+      let html = '<div class="fy-filter-group"><span class="fy-filter-group-label">Genre:</span>';
+      html += '<button class="fy-fbtn active" onclick="setFyGenreFilter(\'All\',this)">All</button>';
+      Array.from(genres).sort().forEach(g => {
+        html += '<button class="fy-fbtn" onclick="setFyGenreFilter(\'' + g.replace(/'/g, "\\'") + '\',this)">' + g + '</button>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function renderFyGrid() {
+      const grid = document.getElementById('fyGrid');
+      const sort = document.getElementById('fySortSelect').value;
+
+      let list = recList.filter(r => !dismissedIds.includes(r.id));
+
+      // Source filter
+      if (fySrcFilter !== 'All') {
+        list = list.filter(r => r.sources.some(s => s.status === fySrcFilter));
+      }
+      // Genre filter
+      if (fyGenreFilter !== 'All') {
+        list = list.filter(r => (r.genres || []).includes(fyGenreFilter));
+      }
+
+      // Sort
+      if (sort === 'score') list.sort((a,b) => (b.score||0) - (a.score||0));
+      else if (sort === 'eps') list.sort((a,b) => (b.episodes||0) - (a.episodes||0));
+      else list.sort((a,b) => b.freq - a.freq);
+
+      // Count
+      const countEl = document.getElementById('fyCount');
+      countEl.innerHTML = '<span>' + list.length + '</span> recommendations found based on your <span>' + animeList.length + '</span> anime';
+
+      if (!list.length) {
+        grid.innerHTML = '<div class="fy-empty"><div class="icon">🔮</div><p>No recommendations found</p><small>Try changing your filters or add more anime to your list.</small></div>';
+        return;
+      }
+
+      grid.innerHTML = list.map(r => {
+        const src = r.sources[0];
+        const statusVerb = {'Completed':'completed','Watching':'are watching','On Hold':'put on hold','Dropped':'dropped','Plan to Watch':'plan to watch'};
+        const reason = src ? 'Because you ' + (statusVerb[src.status]||'watched') + ' ' + src.title : '';
+        const genreTags = (r.genres||[]).slice(0,3).map(g => '<span>' + g + '</span>').join('');
+        const isInList = animeList.find(a => a.id === r.id);
+
+        return '<div class="fy-card" id="fyc-' + r.id + '">' +
+          '<div class="fy-card-poster">' +
+            '<img src="' + r.poster + '" alt="' + r.title.replace(/"/g,'&quot;') + '" loading="lazy">' +
+            '<div class="fy-card-freq">' + r.freq + 'x recommended</div>' +
+            '<button class="fy-card-dismiss" onclick="event.stopPropagation();dismissRec(\'' + r.id + '\')" title="Not interested">✕</button>' +
+          '</div>' +
+          '<div class="fy-card-body">' +
+            '<div class="fy-card-title">' + r.title + '</div>' +
+            '<div class="fy-card-meta">' +
+              '<span>⭐ ' + (r.score || 'N/A') + '</span>' +
+              '<span>' + (r.episodes ? r.episodes + ' eps' : '? eps') + '</span>' +
+              (r.year ? '<span>' + r.year + '</span>' : '') +
+            '</div>' +
+            '<div class="fy-card-genres">' + genreTags + '</div>' +
+            '<div class="fy-card-reason">' + reason + '</div>' +
+            (isInList
+              ? '<button class="fy-card-add added">✓ In your list</button>'
+              : '<button class="fy-card-add" onclick="event.stopPropagation();addRecToList(\'' + r.id + '\',this)">+ Add to Plan to Watch</button>'
+            ) +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function dismissRec(id) {
+      dismissedIds.push(id);
+      localStorage.setItem('anitrack_dismissed', JSON.stringify(dismissedIds));
+      const el = document.getElementById('fyc-' + id);
+      if (el) { el.style.transition = 'opacity 0.3s,transform 0.3s'; el.style.opacity = '0'; el.style.transform = 'scale(0.9)'; setTimeout(() => { el.remove(); renderFyGrid(); }, 300); }
+    }
+
+    function addRecToList(id, btn) {
+      const r = recList.find(x => x.id === id);
+      if (!r || animeList.find(a => a.id === id)) return;
+      const newItem = {
+        id: r.id,
+        title: r.title,
+        titleJp: r.titleJp || r.title,
+        poster: r.poster,
+        synopsis: r.synopsis || '',
+        score: r.score,
+        episodes: r.episodes,
+        year: r.year,
+        genres: r.genres || [],
+        status: 'Plan to Watch',
+        rating: 0,
+        addedAt: Date.now(),
+      };
+      animeList.push(newItem);
+      saveItem(newItem);
+      renderGrid();
+      btn.textContent = '✓ In your list';
+      btn.classList.add('added');
+      btn.onclick = null;
+    }
+
+    // ── INIT ───────────────────────────────────────────────────────
+    renderGrid();   // show local cache instantly
+    initAuth();     // check session → load from cloud if logged in
+  </script>
+</body>
+
+</html>
