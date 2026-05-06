@@ -1685,7 +1685,7 @@
       const hold = animeList.filter(a => a.status === 'On Hold').length;
       const drop = animeList.filter(a => a.status === 'Dropped').length;
       const plan = animeList.filter(a => a.status === 'Plan to Watch').length;
-      const eps = animeList.filter(a => a.status === 'Completed').reduce((s, a) => s + (a.watchedEps != null ? a.watchedEps : (a.episodes || 0)), 0);
+      const eps = animeList.filter(a => a.status === 'Completed').reduce((s, a) => s + (a.watchedEps ?? a.episodes ?? 0), 0);
       document.getElementById('sTot').textContent = tot;
       document.getElementById('sComp').textContent = comp;
       document.getElementById('sWatch').textContent = watch;
@@ -2580,6 +2580,17 @@ async function checkExistingSession() {
     }
 
     // ── INIT ───────────────────────────────────────────────────────
+    // One-time migration: fix watchedEps for existing entries
+    let migrated = false;
+    animeList = animeList.map(a => {
+      if (a.watchedEps == null) {
+        migrated = true;
+        return { ...a, watchedEps: a.status === 'Completed' ? (a.episodes || 0) : 0 };
+      }
+      return a;
+    });
+    if (migrated) localStorage.setItem('anitrack_list', JSON.stringify(animeList));
+
     renderGrid();   // show local cache instantly
     initAuth();     // check session → load from cloud if logged in
   </script>
