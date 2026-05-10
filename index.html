@@ -3,10 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>AniTrack — Anime List Manager</title>
   <meta name="description"
     content="Track your anime watchlist with AniTrack. Search, rate, and manage your anime collection.">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AniTrack">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
   <link
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
@@ -3033,6 +3040,13 @@ async function checkExistingSession() {
 
     renderGrid();   // show local cache instantly
     initAuth();     // check session → load from cloud if logged in
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('AniTrack SW registered');
+      }).catch(err => console.log('SW registration failed:', err));
+    }
   </script>
 </body>
 
