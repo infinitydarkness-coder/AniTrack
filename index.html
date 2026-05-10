@@ -595,11 +595,11 @@
       background: var(--bg2);
     }
 
-    /* GRID */
+    /* GRID — outer container is a block since it holds section headers + sub-grids */
     .anime-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 20px;
+      display: block;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
     .anime-card {
@@ -1010,8 +1010,8 @@
         max-width: 100%;
       }
 
-      .anime-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      .list-section-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
       }
 
       .filter-right {
@@ -2083,9 +2083,22 @@
 
     .list-section-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
       transition: all 0.3s ease;
+    }
+
+    @media (max-width: 900px) {
+      .list-section-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 540px) {
+      .list-section-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
     }
 
     .list-section-grid.collapsed {
