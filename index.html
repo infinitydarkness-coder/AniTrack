@@ -1279,6 +1279,91 @@
 .fy-empty{text-align:center;padding:60px 20px;color:#64748b;}
 .fy-empty .icon{font-size:3rem;margin-bottom:12px;}
 
+
+/* ── DISCOVER TAB ──────────────────────────────────────────────── */
+#discoverSection{display:none;max-width:1400px;margin:0 auto;padding:0 20px 40px;}
+#discoverSection.visible{display:block;}
+
+/* Genre pills */
+.disc-genre-bar{display:flex;flex-wrap:wrap;gap:6px;padding:12px 0 8px;border-bottom:1px solid rgba(124,58,237,0.15);margin-bottom:16px;}
+.disc-pill{padding:6px 14px;border-radius:50px;border:1px solid rgba(124,58,237,0.25);background:rgba(124,58,237,0.06);color:#94a3b8;font-family:'Nunito',sans-serif;font-size:0.74rem;font-weight:700;cursor:pointer;transition:all 0.25s ease;white-space:nowrap;}
+.disc-pill:hover{border-color:rgba(168,85,247,0.5);color:#c084fc;background:rgba(124,58,237,0.12);}
+.disc-pill.active{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(168,85,247,0.2));border-color:#a855f7;color:#e2e8f0;}
+
+/* Season browser */
+.disc-season-bar{display:flex;align-items:center;gap:10px;padding:10px 0 16px;flex-wrap:wrap;}
+.disc-season-bar label{font-size:0.78rem;color:#64748b;font-weight:700;letter-spacing:0.5px;}
+.disc-sel{background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.25);border-radius:8px;color:#e2e8f0;font-family:'Nunito',sans-serif;font-size:0.82rem;padding:7px 12px;cursor:pointer;min-width:90px;}
+.disc-sel option{background:#0f0f1a;color:#e2e8f0;}
+.disc-go{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.disc-go:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,0.4);}
+
+/* Horizontal row section */
+.disc-row{margin-bottom:28px;position:relative;}
+.disc-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.disc-row-title{font-family:'Rajdhani',sans-serif;font-size:1.15rem;font-weight:700;color:#e2e8f0;display:flex;align-items:center;gap:8px;}
+.disc-row-arrows{display:flex;gap:6px;}
+.disc-arrow{width:30px;height:30px;border-radius:50%;border:1px solid rgba(124,58,237,0.3);background:rgba(124,58,237,0.08);color:#a855f7;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.disc-arrow:hover{background:rgba(124,58,237,0.2);border-color:#a855f7;}
+.disc-scroll{display:flex;gap:14px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:8px;scrollbar-width:none;}
+.disc-scroll::-webkit-scrollbar{display:none;}
+
+/* Discover cards */
+.disc-card{min-width:175px;max-width:175px;background:rgba(255,255,255,0.03);border:1px solid rgba(124,58,237,0.12);border-radius:14px;overflow:hidden;transition:all 0.3s ease;flex-shrink:0;position:relative;}
+.disc-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(124,58,237,0.22);border-color:rgba(168,85,247,0.4);}
+.disc-card-poster{aspect-ratio:2/3;overflow:hidden;position:relative;}
+.disc-card-poster img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;}
+.disc-card:hover .disc-card-poster img{transform:scale(1.05);}
+.disc-air-badge{position:absolute;top:6px;left:6px;font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:50px;backdrop-filter:blur(4px);}
+.disc-air-airing{background:rgba(34,197,94,0.75);color:#fff;}
+.disc-air-finished{background:rgba(99,102,241,0.75);color:#fff;}
+.disc-air-upcoming{background:rgba(59,130,246,0.75);color:#fff;}
+.disc-card-body{padding:9px;}
+.disc-card-title{font-weight:700;font-size:0.78rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px;color:#e2e8f0;}
+.disc-card-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;}
+.disc-card-meta span{font-size:0.62rem;color:#94a3b8;background:rgba(255,255,255,0.05);padding:2px 5px;border-radius:4px;}
+.disc-card-genres{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px;}
+.disc-card-genres span{font-size:0.58rem;color:#c084fc;background:rgba(124,58,237,0.1);padding:1px 5px;border-radius:50px;border:1px solid rgba(124,58,237,0.15);}
+
+/* Add / status button */
+.disc-add-btn{width:100%;padding:6px;border:1px solid rgba(124,58,237,0.3);background:rgba(124,58,237,0.08);color:#c084fc;border-radius:7px;font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;transition:all 0.2s;position:relative;}
+.disc-add-btn:hover{background:rgba(124,58,237,0.2);border-color:#a855f7;color:#e2e8f0;}
+.disc-add-btn.in-list{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#4ade80;cursor:default;font-size:0.65rem;}
+
+/* Status picker popup */
+.disc-picker{position:absolute;bottom:42px;left:4px;right:4px;background:#1a1a2e;border:1px solid rgba(124,58,237,0.35);border-radius:10px;padding:6px;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,0.5);display:none;}
+.disc-picker.show{display:block;animation:fadeUp 0.2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.disc-picker-opt{padding:6px 8px;border-radius:6px;font-size:0.7rem;font-weight:700;color:#94a3b8;cursor:pointer;transition:all 0.15s;font-family:'Nunito',sans-serif;}
+.disc-picker-opt:hover{background:rgba(124,58,237,0.15);color:#e2e8f0;}
+
+/* Skeleton */
+.disc-skel{min-width:175px;max-width:175px;background:rgba(255,255,255,0.03);border:1px solid rgba(124,58,237,0.08);border-radius:14px;overflow:hidden;flex-shrink:0;}
+.disc-skel-poster{aspect-ratio:2/3;background:linear-gradient(110deg,rgba(124,58,237,0.05) 8%,rgba(124,58,237,0.1) 18%,rgba(124,58,237,0.05) 33%);background-size:200% 100%;animation:skelShimmer 1.5s infinite;}
+.disc-skel-body{padding:9px;}
+.disc-skel-line{height:10px;border-radius:4px;background:rgba(124,58,237,0.08);margin-bottom:6px;}
+.disc-skel-line.w60{width:60%;}
+.disc-skel-line.w80{width:80%;}
+.disc-skel-line.w40{width:40%;}
+@keyframes skelShimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* Genre grid */
+.disc-genre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-top:16px;}
+.disc-genre-grid .disc-card{min-width:unset;max-width:unset;}
+
+/* Season grid */
+.disc-season-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-top:12px;}
+.disc-season-grid .disc-card{min-width:unset;max-width:unset;}
+
+
+/* ── MOVIE/TV SECTIONS ────────────────────────────────────────── */
+.list-section-head{display:flex;align-items:center;justify-content:space-between;padding:10px 0 6px;margin-top:8px;}
+.list-section-title{font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;color:#e2e8f0;display:flex;align-items:center;gap:8px;}
+.list-section-title .sec-count{font-size:0.75rem;color:#a855f7;background:rgba(124,58,237,0.15);padding:2px 8px;border-radius:50px;}
+.list-section-toggle{background:none;border:1px solid rgba(124,58,237,0.2);color:#94a3b8;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.list-section-toggle:hover{color:#a855f7;border-color:#a855f7;}
+.list-section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;transition:all 0.3s ease;}
+.list-section-grid.collapsed{display:none;}
 /* LANDING PAGE */
 #appLanding{position:fixed;inset:0;z-index:9999;background:#0a0a0f;display:flex;align-items:center;justify-content:center;padding:20px;transition:opacity 0.6s ease,transform 0.6s ease;}
 #appLanding.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
@@ -1351,6 +1436,7 @@
   <div class="main-tabs" id="mainTabs">
     <div class="main-tab active" data-tab="mylist" onclick="switchMainTab('mylist')">📋 My List</div>
     <div class="main-tab" data-tab="foryou" onclick="switchMainTab('foryou')">✨ For You</div>
+    <div class="main-tab" data-tab="discover" onclick="switchMainTab('discover')">🔍 Discover</div>
   </div>
   <main>
     <div class="stats-bar" id="statsBar">
@@ -1381,6 +1467,10 @@
       <div class="stat-card">
         <div class="stat-num" id="sEps">0</div>
         <div class="stat-label">Eps Watched</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="sMovies">0</div>
+        <div class="stat-label">🎬 Movies</div>
       </div>
     </div>
     <div class="filter-section">
@@ -1434,6 +1524,56 @@
         </select>
       </div>
       <div class="fy-grid" id="fyGrid"></div>
+    </div>
+    <!-- DISCOVER SECTION -->
+    <div id="discoverSection">
+      <div class="disc-row" style="margin-bottom:20px;">
+        <div class="disc-row-head"><div class="disc-row-title">🔤 Browse All Anime A-Z</div></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;" id="discAzBtns">
+          <button class="disc-pill active" onclick="discAzClick('',this)">Popular</button>
+          <button class="disc-pill" onclick="discAzClick('#',this)">#</button>
+        <button class="disc-pill" onclick="discAzClick('A',this)">A</button><button class="disc-pill" onclick="discAzClick('B',this)">B</button><button class="disc-pill" onclick="discAzClick('C',this)">C</button><button class="disc-pill" onclick="discAzClick('D',this)">D</button><button class="disc-pill" onclick="discAzClick('E',this)">E</button><button class="disc-pill" onclick="discAzClick('F',this)">F</button><button class="disc-pill" onclick="discAzClick('G',this)">G</button><button class="disc-pill" onclick="discAzClick('H',this)">H</button><button class="disc-pill" onclick="discAzClick('I',this)">I</button><button class="disc-pill" onclick="discAzClick('J',this)">J</button><button class="disc-pill" onclick="discAzClick('K',this)">K</button><button class="disc-pill" onclick="discAzClick('L',this)">L</button><button class="disc-pill" onclick="discAzClick('M',this)">M</button><button class="disc-pill" onclick="discAzClick('N',this)">N</button><button class="disc-pill" onclick="discAzClick('O',this)">O</button><button class="disc-pill" onclick="discAzClick('P',this)">P</button><button class="disc-pill" onclick="discAzClick('Q',this)">Q</button><button class="disc-pill" onclick="discAzClick('R',this)">R</button><button class="disc-pill" onclick="discAzClick('S',this)">S</button><button class="disc-pill" onclick="discAzClick('T',this)">T</button><button class="disc-pill" onclick="discAzClick('U',this)">U</button><button class="disc-pill" onclick="discAzClick('V',this)">V</button><button class="disc-pill" onclick="discAzClick('W',this)">W</button><button class="disc-pill" onclick="discAzClick('X',this)">X</button><button class="disc-pill" onclick="discAzClick('Y',this)">Y</button><button class="disc-pill" onclick="discAzClick('Z',this)">Z</button></div>
+        <div class="disc-genre-grid" id="discAzGrid"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;" id="discAzPager"></div>
+      </div>
+      <div class="disc-genre-bar">
+        <button class="disc-pill active" data-gid="0" onclick="discGenreClick(0,this)">All Genres</button>
+        <button class="disc-pill" data-gid="1" onclick="discGenreClick(1,this)">Action</button><button class="disc-pill" data-gid="22" onclick="discGenreClick(22,this)">Romance</button><button class="disc-pill" data-gid="4" onclick="discGenreClick(4,this)">Comedy</button><button class="disc-pill" data-gid="10" onclick="discGenreClick(10,this)">Fantasy</button><button class="disc-pill" data-gid="14" onclick="discGenreClick(14,this)">Horror</button><button class="disc-pill" data-gid="24" onclick="discGenreClick(24,this)">Sci-Fi</button><button class="disc-pill" data-gid="36" onclick="discGenreClick(36,this)">Slice of Life</button><button class="disc-pill" data-gid="30" onclick="discGenreClick(30,this)">Sports</button><button class="disc-pill" data-gid="7" onclick="discGenreClick(7,this)">Mystery</button><button class="disc-pill" data-gid="37" onclick="discGenreClick(37,this)">Supernatural</button><button class="disc-pill" data-gid="62" onclick="discGenreClick(62,this)">Isekai</button><button class="disc-pill" data-gid="41" onclick="discGenreClick(41,this)">Thriller</button>
+      </div>
+      <div class="disc-season-bar">
+        <label>Browse Season:</label>
+        <select class="disc-sel" id="discYear"><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2014">2014</option><option value="2013">2013</option><option value="2012">2012</option><option value="2011">2011</option><option value="2010">2010</option></select>
+        <select class="disc-sel" id="discSeason"><option value="winter">Winter</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option></select>
+        <button class="disc-go" onclick="discLoadSeason()">Go</button>
+      </div>
+      <div id="discGenreResults"></div>
+      <div id="discSeasonResults"></div>
+      <div id="discRows">
+        <div class="disc-row" data-disc="airing" data-url="https://api.jikan.moe/v4/seasons/now?limit=20">
+          <div class="disc-row-head"><div class="disc-row-title">🔥 Currently Airing</div><div class="disc-row-arrows"><button class="disc-arrow" onclick="discScroll(this,-1)">‹</button><button class="disc-arrow" onclick="discScroll(this,1)">›</button></div></div>
+          <div class="disc-scroll"></div>
+        </div>
+        <div class="disc-row" data-disc="upcoming" data-url="https://api.jikan.moe/v4/seasons/upcoming?limit=20">
+          <div class="disc-row-head"><div class="disc-row-title">📅 Upcoming Next Season</div><div class="disc-row-arrows"><button class="disc-arrow" onclick="discScroll(this,-1)">‹</button><button class="disc-arrow" onclick="discScroll(this,1)">›</button></div></div>
+          <div class="disc-scroll"></div>
+        </div>
+        <div class="disc-row" data-disc="popular" data-url="https://api.jikan.moe/v4/top/anime?filter=bypopularity&limit=20">
+          <div class="disc-row-head"><div class="disc-row-title">👑 Most Popular All Time</div><div class="disc-row-arrows"><button class="disc-arrow" onclick="discScroll(this,-1)">‹</button><button class="disc-arrow" onclick="discScroll(this,1)">›</button></div></div>
+          <div class="disc-scroll"></div>
+        </div>
+        <div class="disc-row" data-disc="toprated" data-url="https://api.jikan.moe/v4/top/anime?limit=20">
+          <div class="disc-row-head"><div class="disc-row-title">⭐ Top Rated All Time</div><div class="disc-row-arrows"><button class="disc-arrow" onclick="discScroll(this,-1)">‹</button><button class="disc-arrow" onclick="discScroll(this,1)">›</button></div></div>
+          <div class="disc-scroll"></div>
+        </div>
+        <div class="disc-row" data-disc="movies" data-url="https://api.jikan.moe/v4/top/anime?type=movie&limit=20">
+          <div class="disc-row-head"><div class="disc-row-title">🎬 Top Movies</div><div class="disc-row-arrows"><button class="disc-arrow" onclick="discScroll(this,-1)">‹</button><button class="disc-arrow" onclick="discScroll(this,1)">›</button></div></div>
+          <div class="disc-scroll"></div>
+        </div>
+        <div class="disc-row" data-disc="season" data-url="https://api.jikan.moe/v4/seasons/now?limit=20&order_by=popularity">
+          <div class="disc-row-head"><div class="disc-row-title">🗓️ This Season</div><div class="disc-row-arrows"><button class="disc-arrow" onclick="discScroll(this,-1)">‹</button><button class="disc-arrow" onclick="discScroll(this,1)">›</button></div></div>
+          <div class="disc-scroll"></div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -1686,6 +1826,7 @@
       const drop = animeList.filter(a => a.status === 'Dropped').length;
       const plan = animeList.filter(a => a.status === 'Plan to Watch').length;
       const eps = animeList.filter(a => a.status === 'Completed').reduce((s, a) => s + (a.watchedEps ?? a.episodes ?? 0), 0);
+      const movies = animeList.filter(a => a.seriesType === 'Movie').length;
       document.getElementById('sTot').textContent = tot;
       document.getElementById('sComp').textContent = comp;
       document.getElementById('sWatch').textContent = watch;
@@ -1693,29 +1834,20 @@
       document.getElementById('sDrop').textContent = drop;
       document.getElementById('sPlan').textContent = plan;
       document.getElementById('sEps').textContent = eps;
+      document.getElementById('sMovies').textContent = movies;
     }
 
     // ── RENDER CARDS ───────────────────────────────────────────────
-    function renderGrid() {
-      const grid = document.getElementById('animeGrid');
-      const q = document.getElementById('listSearch').value.toLowerCase();
-      const sort = document.getElementById('sortSelect').value;
-      let list = animeList.slice();
-      if (currentFilter !== 'All') list = list.filter(a => a.status === currentFilter);
-      if (q) list = list.filter(a => a.title.toLowerCase().includes(q) || (a.titleJp || '').toLowerCase().includes(q));
-      if (sort === 'title') list.sort((a, b) => a.title.localeCompare(b.title));
-      else if (sort === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      else if (sort === 'score') list.sort((a, b) => (b.score || 0) - (a.score || 0));
-      else list.sort((a, b) => b.addedAt - a.addedAt);
-
-      if (!list.length) {
-        grid.innerHTML = `<div class="empty-state"><div class="icon">🎌</div><p>No anime here yet!</p><small>Search above to add anime to your list.</small></div>`;
-        return;
-      }
-      grid.innerHTML = list.map(a => {
-        const sk = a.status.replace(/\s+/g, '-');
-        const stars = a.rating ? '★'.repeat(a.rating) + '<span style="color:var(--text3)">' + '★'.repeat(10 - a.rating) + '</span>' : '';
-        return `<div class="anime-card" data-id="${a.id}" onclick="openEdit('${a.id}')">
+    let tvCollapsed = false, movieCollapsed = false;
+    function toggleSection(type) {
+      if (type === 'tv') tvCollapsed = !tvCollapsed;
+      else movieCollapsed = !movieCollapsed;
+      renderGrid();
+    }
+    function renderCardHtml(a) {
+      const sk = a.status.replace(/\s+/g, '-');
+      const stars = a.rating ? '★'.repeat(a.rating) + '<span style="color:var(--text3)">' + '★'.repeat(10 - a.rating) + '</span>' : '';
+      return `<div class="anime-card" data-id="${a.id}" onclick="openEdit('${a.id}')">
       <button class="card-del" onclick="event.stopPropagation();deleteAnime('${a.id}')">✕</button>
       <div class="card-poster">
         <img src="${a.poster}" alt="${a.title}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'180\\' height=\\'260\\'%3E%3Crect fill=\\'%230f0f1a\\' width=\\'180\\' height=\\'260\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' fill=\\'%237c3aed\\' text-anchor=\\'middle\\' dy=\\'.3em\\' font-size=\\'40\\'%3E🎌%3C/text%3E%3C/svg%3E'">
@@ -1731,7 +1863,35 @@
         <div style="font-size:0.7rem;color:var(--text3);margin-top:4px;">${a.episodes ? a.episodes + ' eps' : ''}</div>
       </div>
     </div>`;
-      }).join('');
+    }
+    function renderGrid() {
+      const grid = document.getElementById('animeGrid');
+      const q = document.getElementById('listSearch').value.toLowerCase();
+      const sort = document.getElementById('sortSelect').value;
+      let list = animeList.slice();
+      if (currentFilter !== 'All') list = list.filter(a => a.status === currentFilter);
+      if (q) list = list.filter(a => a.title.toLowerCase().includes(q) || (a.titleJp || '').toLowerCase().includes(q));
+      if (sort === 'title') list.sort((a, b) => a.title.localeCompare(b.title));
+      else if (sort === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      else if (sort === 'score') list.sort((a, b) => (b.score || 0) - (a.score || 0));
+      else list.sort((a, b) => b.addedAt - a.addedAt);
+
+      if (!list.length) {
+        grid.innerHTML = `<div class="empty-state"><div class="icon">🎌</div><p>No anime here yet!</p><small>Search above to add anime to your list.</small></div>`;
+        updateStats(); return;
+      }
+      const tvList = list.filter(a => a.seriesType !== 'Movie');
+      const movieList = list.filter(a => a.seriesType === 'Movie');
+      let html = '';
+      if (tvList.length) {
+        html += `<div class="list-section-head"><div class="list-section-title">📺 Anime Series <span class="sec-count">${tvList.length}</span></div><button class="list-section-toggle" onclick="toggleSection('tv')">${tvCollapsed ? '▼' : '▲'}</button></div>`;
+        html += `<div class="list-section-grid${tvCollapsed ? ' collapsed' : ''}">${tvList.map(renderCardHtml).join('')}</div>`;
+      }
+      if (movieList.length) {
+        html += `<div class="list-section-head"><div class="list-section-title">🎬 Anime Movies <span class="sec-count">${movieList.length}</span></div><button class="list-section-toggle" onclick="toggleSection('movie')">${movieCollapsed ? '▼' : '▲'}</button></div>`;
+        html += `<div class="list-section-grid${movieCollapsed ? ' collapsed' : ''}">${movieList.map(renderCardHtml).join('')}</div>`;
+      }
+      grid.innerHTML = html;
       updateStats();
     }
 
@@ -1854,6 +2014,7 @@
         episodes: a.episodes,
         year: a.year || (a.aired?.from ? new Date(a.aired.from).getFullYear() : null),
         genres: (a.genres || []).map(g => g.name),
+        seriesType: (a.type === 'Movie') ? 'Movie' : 'TV',
       });
       document.getElementById('searchInput').value = '';
     }
@@ -2080,6 +2241,7 @@ ${entries}
                 watchedEps: watchedEps,
                 year: d.year || null,
                 genres: (d.genres || []).map(g => g.name),
+                seriesType: (d.type === 'Movie') ? 'Movie' : 'TV',
                 status,
                 rating: myScore,
                 addedAt: Date.now() - (total - i),
@@ -2327,13 +2489,19 @@ async function checkExistingSession() {
       document.querySelectorAll('.main-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
       const listEls = [document.getElementById('statsBar'), document.querySelector('.filter-section'), document.getElementById('animeGrid')];
       const fyEl = document.getElementById('forYouSection');
+      const discEl = document.getElementById('discoverSection');
+      // Hide all first
+      listEls.forEach(e => { if(e) e.style.display = 'none'; });
+      fyEl.classList.remove('visible');
+      discEl.classList.remove('visible');
       if (tab === 'mylist') {
         listEls.forEach(e => { if(e) e.style.display = ''; });
-        fyEl.classList.remove('visible');
-      } else {
-        listEls.forEach(e => { if(e) e.style.display = 'none'; });
+      } else if (tab === 'foryou') {
         fyEl.classList.add('visible');
         if (!recList.length && !fyLoading) loadRecommendations();
+      } else if (tab === 'discover') {
+        discEl.classList.add('visible');
+        initDiscoverObserver();
       }
     }
 
@@ -2579,17 +2747,289 @@ async function checkExistingSession() {
       btn.onclick = null;
     }
 
+
+    // ── DISCOVER TAB ──────────────────────────────────────────────
+    const discLoadedRows = new Set();
+    let discObserver = null;
+
+    function initDiscoverObserver() {
+      if (discObserver) return;
+      discObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const row = entry.target;
+            const key = row.dataset.disc;
+            if (key && !discLoadedRows.has(key)) {
+              discLoadedRows.add(key);
+              discQueueRow(row);
+            }
+          }
+        });
+      }, { rootMargin: '200px' });
+      document.querySelectorAll('.disc-row[data-disc]').forEach(r => discObserver.observe(r));
+    }
+
+    function discSkelHtml(n) {
+      let h = '';
+      for (let i = 0; i < n; i++)
+        h += '<div class="disc-skel"><div class="disc-skel-poster"></div><div class="disc-skel-body"><div class="disc-skel-line w80"></div><div class="disc-skel-line w60"></div><div class="disc-skel-line w40"></div></div></div>';
+      return h;
+    }
+
+    async function discFetchWithRetry(url, retries = 2) {
+      for (let r = 0; r <= retries; r++) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) return res;
+          if (res.status === 429 && r < retries) {
+            await delay(3000);
+            continue;
+          }
+          throw new Error(res.status);
+        } catch(e) {
+          if (r === retries) throw e;
+          await delay(3000);
+        }
+      }
+    }
+
+    let discRowQueue = [];
+    let discRowProcessing = false;
+
+    function discQueueRow(row) {
+      discRowQueue.push(row);
+      if (!discRowProcessing) discProcessQueue();
+    }
+
+    async function discProcessQueue() {
+      discRowProcessing = true;
+      while (discRowQueue.length) {
+        const row = discRowQueue.shift();
+        await discFetchRow(row);
+        await delay(1000);
+      }
+      discRowProcessing = false;
+    }
+
+    async function discFetchRow(row) {
+      const scroll = row.querySelector('.disc-scroll');
+      scroll.innerHTML = discSkelHtml(8);
+      const url = row.dataset.url;
+      try {
+        const res = await discFetchWithRetry(url);
+        const json = await res.json();
+        const seen = new Set();
+        const unique = (json.data || []).filter(a => {
+          const mid = String(a.mal_id);
+          if (seen.has(mid)) return false;
+          seen.add(mid);
+          return true;
+        });
+        scroll.innerHTML = unique.map(a => discCardHtml(a)).join('');
+      } catch(e) {
+        const retryId = 'retry_' + row.dataset.disc;
+        scroll.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:20px;"><span style="color:#64748b;font-size:0.82rem;">Failed to load.</span><button id="' + retryId + '" style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#a855f7;padding:5px 12px;border-radius:8px;font-family:Nunito,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;" onclick="discLoadedRows.delete(\'' + row.dataset.disc + '\');discFetchRow(this.closest(\'.disc-row\'))">🔄 Retry</button></div>';
+      }
+    }
+
+    function discGetAirBadge(a) {
+      const s = (a.status || '').toLowerCase();
+      if (s.includes('airing')) return '<span class="disc-air-badge disc-air-airing">🟢 Airing</span>';
+      if (s.includes('upcoming') || s.includes('not yet')) return '<span class="disc-air-badge disc-air-upcoming">🔵 Upcoming</span>';
+      return '<span class="disc-air-badge disc-air-finished">✅ Finished</span>';
+    }
+
+    function discCardHtml(a) {
+      const mid = String(a.mal_id);
+      const title = a.title_english || a.title || '';
+      const poster = a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || '';
+      const score = a.score ? a.score : 'N/A';
+      const eps = a.episodes ? a.episodes + ' eps' : '? eps';
+      const genres = (a.genres || []).slice(0, 2).map(g => '<span>' + g.name + '</span>').join('');
+      const airBadge = discGetAirBadge(a);
+      const existing = animeList.find(x => x.id === mid);
+      let btnHtml;
+      if (existing) {
+        btnHtml = '<button class="disc-add-btn in-list">' + existing.status + '</button>';
+      } else {
+        const safeData = encodeURIComponent(JSON.stringify({
+          id: mid, title: title, titleJp: a.title || '', poster: poster,
+          synopsis: (a.synopsis||'').substring(0,200), score: a.score, episodes: a.episodes,
+          year: a.year, genres: (a.genres||[]).map(g=>g.name)
+        }));
+        btnHtml = '<div style="position:relative;"><button class="disc-add-btn" onclick="discTogglePicker(this)">+ Add to List</button>' +
+          '<div class="disc-picker" data-anime="' + safeData + '">' +
+            '<div class="disc-picker-opt" onclick="discPickStatus(this,\'Watching\')">👀 Watching</div>' +
+            '<div class="disc-picker-opt" onclick="discPickStatus(this,\'Completed\')">✅ Completed</div>' +
+            '<div class="disc-picker-opt" onclick="discPickStatus(this,\'On Hold\')">⏸ On Hold</div>' +
+            '<div class="disc-picker-opt" onclick="discPickStatus(this,\'Dropped\')">❌ Dropped</div>' +
+            '<div class="disc-picker-opt" onclick="discPickStatus(this,\'Plan to Watch\')">📋 Plan to Watch</div>' +
+          '</div></div>';
+      }
+      return '<div class="disc-card">' +
+        '<div class="disc-card-poster"><img src="' + poster + '" alt="' + title.replace(/"/g,'&quot;') + '" loading="lazy">' + airBadge + '</div>' +
+        '<div class="disc-card-body">' +
+          '<div class="disc-card-title">' + title + '</div>' +
+          '<div class="disc-card-meta"><span>⭐ ' + score + '</span><span>' + eps + '</span></div>' +
+          '<div class="disc-card-genres">' + genres + '</div>' +
+          btnHtml +
+        '</div></div>';
+    }
+
+    function discTogglePicker(btn) {
+      // Close any open pickers first
+      document.querySelectorAll('.disc-picker.show').forEach(p => p.classList.remove('show'));
+      const picker = btn.nextElementSibling;
+      if (picker) picker.classList.toggle('show');
+    }
+
+    function discPickStatus(opt, status) {
+      const picker = opt.parentElement;
+      const dataStr = decodeURIComponent(picker.dataset.anime);
+      const animeData = JSON.parse(dataStr);
+      // Check duplicate
+      if (animeList.find(a => a.id === animeData.id)) return;
+      const watchedEps = status === 'Completed' ? (animeData.episodes || 0) : 0;
+      const newItem = {
+        ...animeData, status, rating: 0, watchedEps, addedAt: Date.now()
+      };
+      animeList.push(newItem);
+      saveItem(newItem);
+      renderGrid();
+      // Update button
+      const wrapper = picker.parentElement;
+      wrapper.innerHTML = '<button class="disc-add-btn in-list">' + status + '</button>';
+    }
+
+    // Close pickers on outside click
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.disc-add-btn') && !e.target.closest('.disc-picker')) {
+        document.querySelectorAll('.disc-picker.show').forEach(p => p.classList.remove('show'));
+      }
+    });
+
+    // Scroll arrows
+    function discScroll(btn, dir) {
+      const scroll = btn.closest('.disc-row').querySelector('.disc-scroll');
+      scroll.scrollBy({ left: dir * 380, behavior: 'smooth' });
+    }
+
+    // Genre filter
+    let discActiveGenre = 0;
+    async function discGenreClick(gid, btn) {
+      document.querySelectorAll('.disc-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      discActiveGenre = gid;
+      const container = document.getElementById('discGenreResults');
+      const rows = document.getElementById('discRows');
+      if (gid === 0) {
+        container.innerHTML = '';
+        rows.style.display = '';
+        return;
+      }
+      rows.style.display = 'none';
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;">Loading...</div>';
+      try {
+        const res = await fetch('https://api.jikan.moe/v4/anime?genres=' + gid + '&order_by=popularity&limit=24');
+        const json = await res.json();
+        container.innerHTML = '<div class="disc-genre-grid">' + (json.data||[]).map(a => discCardHtml(a)).join('') + '</div>';
+      } catch(e) {
+        container.innerHTML = '<div style="color:#f87171;padding:20px;">Failed to load genre results.</div>';
+      }
+    }
+
+    // Season browser
+    async function discLoadSeason() {
+      const year = document.getElementById('discYear').value;
+      const season = document.getElementById('discSeason').value;
+      const container = document.getElementById('discSeasonResults');
+      container.innerHTML = '<div style="text-align:center;padding:20px;color:#64748b;">Loading ' + season + ' ' + year + '...</div>';
+      try {
+        const res = await fetch('https://api.jikan.moe/v4/seasons/' + year + '/' + season + '?limit=24');
+        const json = await res.json();
+        if ((json.data||[]).length === 0) {
+          container.innerHTML = '<div style="color:#64748b;padding:20px;text-align:center;">No anime found for ' + season + ' ' + year + '.</div>';
+        } else {
+          container.innerHTML = '<div class="disc-season-grid">' + (json.data||[]).map(a => discCardHtml(a)).join('') + '</div>';
+        }
+      } catch(e) {
+        container.innerHTML = '<div style="color:#f87171;padding:20px;">Failed to load season.</div>';
+      }
+    }
+
+
+    // ── A-Z BROWSE ────────────────────────────────────────────────
+    let discAzPage = 1;
+    let discAzLetter = '';
+
+    async function discAzClick(letter, btn) {
+      document.querySelectorAll('#discAzBtns .disc-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      discAzLetter = letter;
+      discAzPage = 1;
+      discAzLoad();
+    }
+
+    async function discAzLoad() {
+      const grid = document.getElementById('discAzGrid');
+      const pager = document.getElementById('discAzPager');
+      grid.innerHTML = discSkelHtml(12);
+      pager.innerHTML = '';
+      let url;
+      if (!discAzLetter) {
+        url = 'https://api.jikan.moe/v4/top/anime?filter=bypopularity&limit=24&page=' + discAzPage;
+      } else {
+        url = 'https://api.jikan.moe/v4/anime?letter=' + encodeURIComponent(discAzLetter) + '&order_by=title&sort=asc&limit=24&page=' + discAzPage;
+      }
+      try {
+        const res = await discFetchWithRetry(url);
+        const json = await res.json();
+        const items = json.data || [];
+        if (!items.length) {
+          grid.innerHTML = '<div style="color:#64748b;padding:30px;text-align:center;">No results found.</div>';
+          return;
+        }
+        grid.innerHTML = items.map(a => discCardHtml(a)).join('');
+        // Pagination
+        const lastPage = json.pagination?.last_visible_page || 1;
+        let ph = '';
+        if (discAzPage > 1) ph += '<button class="disc-go" onclick="discAzPage--;discAzLoad()">← Prev</button>';
+        ph += '<span style="color:#64748b;font-size:0.78rem;padding:6px;">Page ' + discAzPage + ' / ' + lastPage + '</span>';
+        if (discAzPage < lastPage) ph += '<button class="disc-go" onclick="discAzPage++;discAzLoad()">Next →</button>';
+        pager.innerHTML = ph;
+      } catch(e) {
+        grid.innerHTML = '<div style="color:#f87171;padding:20px;">Failed to load. <button class="disc-go" onclick="discAzLoad()">🔄 Retry</button></div>';
+      }
+    }
+
+    // Load default A-Z (popular) when discover tab opens
+    const _origInitDisc = initDiscoverObserver;
+    initDiscoverObserver = function() {
+      _origInitDisc();
+      if (!document.getElementById('discAzGrid').children.length) discAzLoad();
+    };
+
     // ── INIT ───────────────────────────────────────────────────────
-    // One-time migration: fix watchedEps for existing entries
+    // One-time migration: fix watchedEps + seriesType for existing entries
+    const MOVIE_IDS = new Set(['39569','459','431','32281','28851','1689','578','28805',
+      '35851','59845','12355','41168','54233','12477','49938','37981','28725','16782',
+      '38826','33050','33049','59571','34498','38816','40787','50594']);
     let migrated = false;
     animeList = animeList.map(a => {
-      if (a.watchedEps == null) {
-        migrated = true;
-        return { ...a, watchedEps: a.status === 'Completed' ? (a.episodes || 0) : 0 };
+      let changed = false;
+      const upd = { ...a };
+      if (upd.watchedEps == null) {
+        upd.watchedEps = upd.status === 'Completed' ? (upd.episodes || 0) : 0;
+        changed = true;
       }
-      return a;
+      if (!upd.seriesType) {
+        upd.seriesType = MOVIE_IDS.has(upd.id) ? 'Movie' : 'TV';
+        changed = true;
+      }
+      if (changed) migrated = true;
+      return changed ? upd : a;
     });
-    if (migrated) localStorage.setItem('anitrack_list', JSON.stringify(animeList));
+    if (migrated) { localStorage.setItem('anitrack_list', JSON.stringify(animeList)); save(); }
 
     renderGrid();   // show local cache instantly
     initAuth();     // check session → load from cloud if logged in
